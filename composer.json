@@ -1,0 +1,29 @@
+{
+    "name": "metaclass-nl/authentication-guard-bundle",
+    "type": "symfony-bundle",
+    "description": "Authentication Guard for Symfony 2",
+    "keywords": ["security", "brute force", "dictionary attack", "login", "authentication"],
+    "homepage": "http://friendsofsymfony.github.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Henk Verhoeven",
+            "homepage": "http://www.metaclass.nl/"
+        },
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.3",
+     	"symfony/symfony": "~2.3",
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "doctrine/doctrine-bundle": "1.2.*",
+    },
+    "require-dev": {
+    },
+    "suggest": {
+    },
+    "autoload": {
+        "psr-0": { "Metaclass\\AuthenticationGuardBundle": "" }
+    },
+    "target-dir": "Metaclass/AuthenticationGuardBundle",
+}

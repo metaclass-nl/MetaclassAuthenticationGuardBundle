@@ -1,0 +1,22 @@
+parameters:
+    metaclass_auth_guard.entity_requestcounts.class: "Metaclass\AuthenticationGuardBundle\Entity\RequestCounts"
+    metaclass_auth_guard.tresholds_governor.class: "Metaclass\AuthenticationGuardBundle\Service\TresholdsGovernor"
+    metaclass_auth_guard.authentication.listener.form.class: Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard
+
+services:
+
+# Entity Manager for Request Counters
+    metaclass_auth_guard.entity_manager_login:
+        factory_service: doctrine
+        factory_method: getManager
+        class: Doctrine\ORM\EntityManager
+        public: false
+        arguments: [%entity_manager_login.name%] 
+
+    metaclass_auth_guard.tresholds_governor:
+        class: %metaclass_auth_guard.tresholds_governor.class%
+        arguments: ["@metaclass_auth_guard.entity_manager_login", %metaclass_auth_guard.entity_requestcounts.class%, %metaclass_auth_guard.tresholds_governor_params%]
+
+
+
+
