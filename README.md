@@ -15,8 +15,11 @@ REQUIREMENTS
 This bundle is for the symfony framework and requires Symfony ~2.3 and PHP >=5.3.3
 Uses Doctrine >=2.2.3 and was tested with MySQL 5.5.
 
-LIMITATIONS
------------
+RELEASE NOTES
+-------------
+
+This is a pre-release version under development. 
+
 Currently the Bundle can only protect form-based authentication using the security.authentication.listener.form service 
 (Default: Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener).
 
@@ -24,25 +27,11 @@ Protection of usernames against timing attacks is probably not fully effective b
 - differences in database query performance for frequently and infrequently used usernames,
 - differences in the execution paths of Symfony's components for existing and non-existing user names.
 
-Does not protect:
-- account registration processes (if any)
-- password change route (if any)
-- password reset route (if any)
-
-Does not enforce timeouts after individual failed login attempts.
-
-Does not monitor the total number of failed authentication attempts per minute, and has no threshold above which the authentication system automatically injects a configurable 45+ second delay between authentication attempts.
-
-Does not protect against many usernames and same password attacks.
-
-Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the login form to hyde differences between them that should not be reported to users.
+Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the 
+login form to hyde differences between them that should not be reported to users.
 
 Does not garbage-collect nor pack stored RequestCounts. 
 
-Does not contain (examples of) Controllers, forms and entities for 
-- sending explanatory e-mails with username and IP adrress release links and tokens
-- storing release tokens sent by e-mail
-- release username, IP addres, or the combination of username with IP adress or user agent
 
 INSTALLATION AND CONFIGURATION
 ------------------------------
@@ -107,11 +96,6 @@ metaclass_authentication_guard:
         releaseUserOnLoginSuccess: false
         distinctiveAgentMinLength: 30
 		
-RELEASE NOTES
--------------
-
-This is a pre-relaase version under development. 
-   
 SUPPORT
 ---------------
 
