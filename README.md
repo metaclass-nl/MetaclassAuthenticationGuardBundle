@@ -32,6 +32,8 @@ login form to hyde differences between them that should not be reported to users
 
 Does not garbage-collect nor pack stored RequestCounts. 
 
+Unit tests of the TresholdGovernor class are included, but only run from a UnitTestController (not included in the bundle).
+
 
 INSTALLATION AND CONFIGURATION
 ------------------------------
@@ -95,7 +97,8 @@ metaclass_authentication_guard:
         allowReleasedUserOnAgentFor: "10 days"
         releaseUserOnLoginSuccess: false
         distinctiveAgentMinLength: 30
-		
+        
+	
 SUPPORT
 ---------------
 
