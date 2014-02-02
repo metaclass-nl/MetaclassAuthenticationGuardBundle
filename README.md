@@ -78,7 +78,7 @@ public function registerBundles()
 }
 ```
 
-Add the following to your app/config/security.yml:
+4. Add the following to your app/config/security.yml:
 
 parameters:
     security.user_checker.class: Metaclass\AuthenticationGuardBundle\Service\UserChecker
@@ -91,7 +91,7 @@ services:
         calls:
             - [setGovenor, ["@metaclass_auth_guard.authentication_governor"] ] # REQUIRED
 
-You may also add the following configuraton parameters :
+5. You may also add the following configuraton parameters (defaults shown):
 
 metaclass_authentication_guard:
     entity_manager_login:
@@ -110,7 +110,7 @@ metaclass_authentication_guard:
 RELEASE NOTES
 -------------
 
-This is a development version. 
+This is a pre-relaase version under development. 
    
 SUPPORT
 ---------------

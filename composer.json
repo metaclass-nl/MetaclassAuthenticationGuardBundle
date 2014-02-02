@@ -9,7 +9,7 @@
         {
             "name": "Henk Verhoeven",
             "homepage": "http://www.metaclass.nl/"
-        },
+        }
     ],
     "minimum-stability": "dev",
     "require": {
