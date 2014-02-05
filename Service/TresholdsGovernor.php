@@ -88,7 +88,7 @@ class TresholdsGovernor {
     public function checkAuthentication($justFailed=false) 
     {
         $error = null;
-        if ($justFailed) { // failure that occurred during the current authentication attempt are not yet registered, add them here
+        if ($justFailed) { // failure, but not yet registered, add it here
             $this->failureCountForUserName++;
             $this->failureCountForIpAddress++;
             $this->failureCountForUserOnAddress++;
@@ -176,7 +176,7 @@ class TresholdsGovernor {
         $dateTime = new \DateTime($this->dtString);
         $timeLimit = new \DateTime("$this->dtString - $this->blockUsernamesFor");
         $this->requestCountsRepo->updateColumnWhereColumnNullAfterSupplied(
-            'userReleasedAt', $dateTime->format('Y-m-d'), $timeLimit, $this->username, null, null);
+            'userReleasedAt', $dateTime, $timeLimit, $this->username, null, null);
     }
     
     public function releaseUserNameForIpAddressAndUserAgent()
@@ -184,9 +184,9 @@ class TresholdsGovernor {
         $dateTime = new \DateTime($this->dtString);
         $timeLimit = new \DateTime("$this->dtString - $this->blockUsernamesFor");
         $this->requestCountsRepo->updateColumnWhereColumnNullAfterSupplied(
-            'userReleasedForAddressAndAgentAt', $dateTime->format('Y-m-d'), $timeLimit, $this->username, $this->ipAddress, null);
+            'userReleasedForAddressAndAgentAt', $dateTime, $timeLimit, $this->username, $this->ipAddress, null);
         $this->requestCountsRepo->updateColumnWhereColumnNullAfterSupplied(
-            'userReleasedForAddressAndAgentAt', $dateTime->format('Y-m-d'), $timeLimit, $this->username, null, $this->agent);
+            'userReleasedForAddressAndAgentAt', $dateTime, $timeLimit, $this->username, null, $this->agent);
     }
 
     public function adminReleaseIpAddress()
@@ -194,7 +194,7 @@ class TresholdsGovernor {
         $dateTime = new \DateTime($this->dtString);
         $timeLimit = new \DateTime("$this->dtString - $this->blockIpAddressesFor");
         $this->requestCountsRepo->updateColumnWhereColumnNullAfterSupplied(
-            'addresReleasedAt', $dateTime->format('Y-m-d'), $timeLimit, null, $this->ipAddress, null);
+            'addresReleasedAt', $dateTime, $timeLimit, null, $this->ipAddress, null);
     }
 
 }

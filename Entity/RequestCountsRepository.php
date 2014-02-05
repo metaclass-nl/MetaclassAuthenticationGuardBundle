@@ -145,7 +145,7 @@ class RequestCountsRepository extends EntityRepository {
         $qb = $conn->createQueryBuilder();
         $qb->update('secu_requests', 'r')
             ->set($columnToUpdate, ':value')
-            ->setParameter('value', $value)
+            ->setParameter('value', $valuet->format('Y-m-d H:i:s'))
             ->where("$columnToUpdate IS NULL")
             ->andWhere("r.dtFrom > :dtLimit")
             ->setParameter('dtLimit', $dtLimit->format('Y-m-d H:i:s'));

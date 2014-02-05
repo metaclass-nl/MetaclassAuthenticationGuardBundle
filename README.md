@@ -3,12 +3,16 @@ Authentication Guard for Symfony 2
  
 INTRODUCTION
 ------------
+The OWASP Guide states "Applications MUST protect credentials from common authentication attacks as detailed 
+in the Testing Guide". Symfony 2 has a firewall and a series of authentication components, but none to 
+protect against brute force and dictionary attacks. This Bundle aims to protect user credentials from 
+these authentication attacks.
 
-This Bundle aims to protect user credentials from some common authentication attacks:
-- Brute force and dictionary attacks trying to obtain valid combinations of username and password. 
-- Timming attacks to obtain valid usernames (Symfony 2.2 and up do already protect passwords against timing attacks)
-
-To do so it blocks the primary authentication route for requests with a user name or from a client ip address for which authentication failed  too often. It is based on the "Tresholds Governer" described in the OWASP Guide. To hide wheater an account actually exists for a user name, it will block any user name that is tried too often, regardless of the existence and status of an account with that username.
+To do so it blocks the primary authentication route for requests with a user name or from a client ip address 
+for which authentication failed  too often. It is based on the "Tresholds Governer" described 
+in the OWASP Guide. To hide wheater an account actually exists for a user name, 
+it will block any user name that is tried too often, regardless of the existence and 
+status of an account with that username.
 
 REQUIREMENTS
 ------------
@@ -23,9 +27,8 @@ This is a pre-release version under development.
 Currently the Bundle can only protect form-based authentication using the security.authentication.listener.form service 
 (Default: Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener).
 
-Protection of usernames against timing attacks is probably not fully effective because of:
-- differences in database query performance for frequently and infrequently used usernames,
-- differences in the execution paths of Symfony's components for existing and non-existing user names.
+May be vurnerable to user enumeration through timing attacks because of differences in database query performance 
+for frequently and infrequently used usernames,
 
 Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the 
 login form to hyde differences between them that should not be reported to users.
@@ -34,73 +37,14 @@ Does not garbage-collect nor pack stored RequestCounts.
 
 Unit tests of the TresholdGovernor class are included, but only run from a UnitTestController (not included in the bundle).
 
-
-INSTALLATION AND CONFIGURATION
-------------------------------
-
-1. Require the bundle in your composer.json
-```js
-{
-    "require": {
-        "metaclass-nl/authentication-guard-bundle": "*@dev"
-    }
-}
-```
-2. download the bundle by:
-
-``` bash
-$ php composer.phar update metaclass-nl/authentication-guard-bundle
-```
-
-Composer will install the bundle to your `vendor/metaclass-nl` folder.
-
-3. Add the bundle to your AppKernel
-
-``` php
-<?php
-// app/AppKernel.php
-
-public function registerBundles()
-{
-    $bundles = array(
-        // ...
-        new Metaclass\AuthenticationGuardBundle\MetaclassAuthenticationGuardBundle.php(),
-    );
-}
-```
-
-4. Add the following to your app/config/security.yml:
-
-parameters:
-    security.user_checker.class: Metaclass\AuthenticationGuardBundle\Service\UserChecker
-
-services: 
-    security.authentication.listener.form:
-        class: %metaclass_auth_guard.authentication.listener.form.class%
-        parent: "security.authentication.listener.abstract"
-        abstract: true
-        calls:
-            - [setGovenor, ["@metaclass_auth_guard.authentication_governor"] ] # REQUIRED
-
-5. You may also add the following configuraton parameters (defaults shown):
-
-metaclass_authentication_guard:
-    entity_manager_login:
-        name: ""
-    tresholds_governor_params:
-        counterDurationInSeconds:  300
-        blockUsernamesFor: "10 days" 
-        limitPerUserName: 3
-        blockIpAddressesFor: "15 minutes"
-        limitBasePerIpAddress: 10
-        allowReleasedUserOnAddressFor: "30 days"
-        allowReleasedUserOnAgentFor: "10 days"
-        releaseUserOnLoginSuccess: false
-        distinctiveAgentMinLength: 30
-        
+DOCUMENTATION
+-------------
+[Installation and configuration](Resources/doc/Installation.md)
+[Counting and deciding](Resources/doc/Counting and deciding.md)
+[Hooking into Symfony](Resources/doc/Hooking into Symfony.md)
 	
 SUPPORT
----------------
+-------
 
 MetaClass offers help and support on a commercial basis with 
 the application and extension of this bundle and additional 
