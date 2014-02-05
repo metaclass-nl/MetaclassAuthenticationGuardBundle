@@ -1,6 +1,9 @@
 INSTALLATION AND CONFIGURATION
 ==============================
 
+Installation
+------------
+
 0. Check if you have the following setting in your app/conf/security.yml:
 ```yml
     firewalls:
@@ -192,6 +195,8 @@ Configurations
 	The users browser may pass a short user agent string or none at all.
 	User agent strings that are shorter then the number of characters set here will not qualify for username release by user agent. 
 	
+
+
 
 * releasing is possible for a username in general, an IP address in general, or for the combination of a username with an user agent/ip address.
 

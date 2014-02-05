@@ -97,6 +97,7 @@ All these exceptions inherit from AuthenticationBlockedException.
   to developers making the settings. Safer is to store and use a 'dtIntil' or 'dtThrough' field specifying when
   the counting period ends. Counters that start before 'blockIpAddressesFor' ago but end afterwards will then
   be added too. 
+  
 ** ISSUE: When a user is using a mobile connection, and an attack is coming from the same mobile network,
    it may have the same IP address, leading to reblocking of the username for the IP addess. If the release 
    by user agent takes precedence, the user would not be reblocked unless the attack used the same user
