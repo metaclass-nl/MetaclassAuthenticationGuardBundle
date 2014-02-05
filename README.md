@@ -39,9 +39,9 @@ Unit tests of the TresholdGovernor class are included, but only run from a UnitT
 
 DOCUMENTATION
 -------------
-[Installation and configuration](Resources/doc/Installation.md)
-[Counting and deciding](Resources/doc/Counting and deciding.md)
-[Hooking into Symfony](Resources/doc/Hooking into Symfony.md)
+- [Installation and configuration](Resources/doc/Installation.md)
+- [Counting and deciding](Resources/doc/Counting and deciding.md)
+- [Hooking into Symfony](Resources/doc/Hooking into Symfony.md)
 	
 SUPPORT
 -------
