@@ -1,6 +1,28 @@
 INSTALLATION AND CONFIGURATION
 ==============================
 
+0. Check if you have the following setting in your app/conf/security.yml:
+```yml
+    firewalls:
+        secured_area:
+            form_login: 
+```
+If you have no firewall, there is no authentication to guard. If you have some other setting instead of form_login:,
+for example http_basic:, http_digest: or x509:, the current version of this bundle can not guard it. (remember_me: 
+will usually be combined with some other Authentication Listener, currently this bundle can not guard it)
+
+If you have a setting like this:
+```yml
+    firewalls:
+        secured_area:
+            form_login:
+            	id: somecustomserviceid 
+```
+you are using a custom form authenticaton listener service. This bundle can only guard it if your service is configured
+to use the default security.authentication.listener.form.class 
+(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
+and you will have to write your own configuration to use instead of the one under step 4.
+
 1. Require the bundle in your composer.json
 ```js
 {
@@ -34,14 +56,15 @@ public function registerBundles()
 
 4. Add the following to your app/config/security.yml:
 
+```yml
 services: 
     security.authentication.listener.form:
         class: %metaclass_auth_guard.authentication.listener.form.class%
         parent: "security.authentication.listener.abstract"
         abstract: true
         calls:
-            - [setGovenor, ["@metaclass_auth_guard.authentication_governor"] ] # REQUIRED
-
+            - [setGovenor, ["@metaclass_auth_guard.tresholds_governor"] ] # REQUIRED
+```
 5. You may also add the following configuraton parameters (defaults shown):
 
 metaclass_authentication_guard:
@@ -66,14 +89,8 @@ Configurations
     entity_manager_login:
         name: ""
         
-	You may want to use a different database user for the authentication then for the application itself. 
-	Then you do not have to GRANT the user of the default entity manager access to the tables where authentication data is stored. 
-	This gives a smaller contact surface wherefrom the sensitive authentication data can be reached.  
-
-	And the user of the authentication entity manager does not need to have access to the tables where the application data is stored.
-	This keeps your application data one step further away from the authentication functions that can after all be accessed by everybody. 
- 
-	So if you have a separate entity manager for authentication, you can pass its name here.
+	The default for this setting is emtpy, resulting in the default Entity Manager to be used. 
+	If you some specific value a specific entity manager will be used for storing and retieving RequestCounts. 
 
 2. Counting duration
 
