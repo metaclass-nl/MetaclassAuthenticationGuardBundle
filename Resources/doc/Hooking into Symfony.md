@@ -60,55 +60,9 @@ be speficfied by the setting:
 ```
  The default for this setting is emtpy, resulting in the default Entity Manager to be used.
  
-
-Other options explored
-----------------------
-
-It is hard to make out which service is intended to do things like registering  
-Disadvantage of replacing the security.authentication.listener.form service is that it only works for
-form-based authentication. Other options where:
-
-1. Replacing the security.authentication.manager service (AuthenticationProviderManager). 
-  The problem with this is that this service has no access to the request. 
-  Therefore it does not know the IP address of the login request. 
-   
-2. Replacing the security.authentication.provider.dao (DaoAuthenticationProvider) service. 
-   Also has no access to the request. Would probably not work with non-database providers like with one for
-   Ldap, but neither would the current solution.
-
-3. Replacing the AuthenticationFailureHandler and the AuthenticationSuccessHandler. This is not a good place for blocking, 
-   because attackers will still get the code executed that retieves the user and checks the password. Timing will then leak the (non)existence of 
-   the user, even if the login is blocked later by one of these handlers. 
-   Successes and faulures may be registered from here, but the primary goal of these services is deciding on where to
-   redirect to after the login has been processed. Developers may therefore want to replace these services too,
-   and that would then not be compatible with this bundle.  
-   
-4. Replacing the UserChecker service. ::checkPreAuth could block attempts before the user is retrieved and the password 
-   ckecked, but once again there is no access to the request. And this service too is a likely candidate for
-   application developers to replace, also leading to incompatibilty.
- 
-5. Adding a specific kernel event listener for kernel.request events. This seems to be a good option as none of
-   the standard authentication services would have to be replaced, leaving all options open to the application
-   developer. The request is available as well, so we know the ip addres. However, the user name would also
-   be in the request, but where depends on the security.authentication.listener.form option settings, or if
-   a different type of Authentication Listener is used, like BasicAuthenticationListener, it would depend
-   on the specifics of that type. Furthermore, the login requests are diverted in an early stage,
-   but that may be solved by setting priority lower then 128 (not tested).
-   Finally we would need some other service to catch and store authentication results. 
-   
-6. Adding a specific kernel event listener for kernel.response events. Maybe login results could be cought from there,
-   but there will certainly be differences depending on the type of Authentication Listener. 
-   
-7. Replacing the security.exception_listener service. The login handling starts with a security exception
-   that is thrown becuase the login route is protected by the firewall, so it will certaily pass here. The reques
-   is available too, Exceptions form the authentication can be caught and the results inferred from them. 
-   But the existing exception handling code is probably very important and not very transparent so maintenance
-   may become a problem. And we still have the problem of obtaining the user name. 
-   Furthermore there is a Cookbook page about changing the target path behavior so application 
-   developers may want to replace this service too. 
-
-Basically the disadvantage of having to develop different Guard classes for different kinds of authentication
-is only solved by options 1 and 2. Maybe a service could be injected that does have access to the current request.
+Alternatives
+------------
+Ideas for alternatives are discussed [on the wiki](https://github.com/metaclass-nl/MetaclassAuthenticationGuardBundle/wiki/Other-options-for-hooking-the-Guard-into-Symfony%27s-authentication)
 
  
 * ISSUE: Maybe this should be done by the session strategy, not by the Authentication Listener?

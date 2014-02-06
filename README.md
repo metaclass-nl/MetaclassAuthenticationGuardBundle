@@ -6,13 +6,19 @@ INTRODUCTION
 The OWASP Guide states "Applications MUST protect credentials from common authentication attacks as detailed 
 in the Testing Guide". Symfony 2 has a firewall and a series of authentication components, but none to 
 protect against brute force and dictionary attacks. This Bundle aims to protect user credentials from 
-these authentication attacks.
+these authentication attacks. It is based on the "Tresholds Governer" described in the OWASP Guide.
 
-To do so it blocks the primary authentication route for requests with a user name or from a client ip address 
-for which authentication failed  too often. It is based on the "Tresholds Governer" described 
-in the OWASP Guide. To hide wheater an account actually exists for a user name, 
-it will block any user name that is tried too often, regardless of the existence and 
-status of an account with that username.
+FEATURES
+--------
+
+- Blocks the primary authentication route by both username and client ip address for which authentication failed  too often,
+ 
+- To hide wheater an account actually exists for a user name, any user name that is tried too often may be blocked, regardless of the existence and 
+status of an account with that username,
+
+- Automatic release of username on authentication success,
+
+- Stores counters instead of individual requests to prevent database flooding from brute force attacks.
 
 REQUIREMENTS
 ------------

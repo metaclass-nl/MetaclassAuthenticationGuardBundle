@@ -37,7 +37,7 @@ with dtFrom 00:00:00 is incremented. But if anouther login request is received a
 with dtFrom 00:03:00.
 
 When the TresholdsGovernor is initialized it adds up all 'loginsFailed' counters from all records with the 
-IP address that the request is coming from that are less old then the 'blockIpAddressesFor' setting duration*. 
+IP address that the request is coming from that are less old then the 'blockIpAddressesFor' setting duration [idea for improvement](https://github.com/metaclass-nl/MetaclassAuthenticationGuardBundle/wiki/Home). 
 Counters from records whose IP address has been released are not added. The same is done for the username from 
 the request, but with the settings 'blockUsernamesFor' and not adding counter whose username has been released. 
 
@@ -62,7 +62,8 @@ IP address or user name matches one of the specified.
 
 Most systems that count failed logins per user reset the failed logins counter when a login is successfull.
 If the 'releaseUserOnLoginSuccess' option is set to true, you get the same result: each time the user logs in sucessfully, 
-the username is released (setting the 'userReleasedAt' field). And only failures from unreleased records are added to the total. 
+the username is released (setting the 'userReleasedAt' field). And only failures from unreleased records are added to 
+the total. 
 
 This allows slow/distributed attacks to go on for a long period when the user logs in frequently.
 If the 'releaseUserOnLoginSuccess' option is set to false, user names are only released for the IP address and 
@@ -91,14 +92,6 @@ UsernameBlockedForAgentException.
 
 All these exceptions inherit from AuthenticationBlockedException. 
 
-
-
-* ISSUE: Counters that start before 'blockIpAddressesFor' ago are not added. This may be contra intuitive
-  to developers making the settings. Safer is to store and use a 'dtIntil' or 'dtThrough' field specifying when
-  the counting period ends. Counters that start before 'blockIpAddressesFor' ago but end afterwards will then
-  be added too. 
-  
-** ISSUE: When a user is using a mobile connection, and an attack is coming from the same mobile network,
-   it may have the same IP address, leading to reblocking of the username for the IP addess. If the release 
-   by user agent takes precedence, the user would not be reblocked unless the attack used the same user
-   agent string. Downside is that the user would be reblocked when an attack was using his user agent string.
+Improvements
+------------
+Ideas for improvements are duscussed [on the wiki](https://github.com/metaclass-nl/MetaclassAuthenticationGuardBundle/wiki)

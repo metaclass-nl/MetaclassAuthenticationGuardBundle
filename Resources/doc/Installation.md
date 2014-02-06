@@ -80,7 +80,7 @@ metaclass_authentication_guard:
         blockIpAddressesFor: "15 minutes"
         limitBasePerIpAddress: 10
         releaseUserOnLoginSuccess: false
-        allowReleasedUserOnAddressFor: "30 days"
+        allowReleasedUserOnAddressFor: "25 minutes" 
         allowReleasedUserOnAgentFor: "10 days"
         distinctiveAgentMinLength: 30
         
@@ -109,10 +109,11 @@ Configurations
 	
 	The duration for which failed logins are countend per username. Values like "3 minutes", "12 hours", "5 years" are allowed.
 	
-	The OWASP Guide does not advise about a separate lockout duration per user name. 
-	Many applications block user accounts forever after three or five attempts. 
+	The OWASP Guide: 
+	> If necessary, such as for compliance with a national security standard, a configurable soft lockout of approximately 15-30 minutes should apply, with an error message stating the reason and when the account will become active again.
+	Hoever, many applications block user accounts after three or five attempts until they are reactivated explicitly. 
 	This is not supported, but you may set the duration long. Be aware that the number of counters may have to become
-	very high, slowing down the authentication process.
+	very high, slowing down the authentication process [idea for improvement](https://github.com/metaclass-nl/MetaclassAuthenticationGuardBundle/wiki). 
 
 	Counters that start before the system time minus this duration do not count for this purpose.
 	However, this does not mean that usernames that became blocked will never be blocked after this duration: if more 
@@ -195,8 +196,7 @@ Configurations
 	The users browser may pass a short user agent string or none at all.
 	User agent strings that are shorter then the number of characters set here will not qualify for username release by user agent. 
 	
+Notes
 
-
-
-* releasing is possible for a username in general, an IP address in general, or for the combination of a username with an user agent/ip address.
+- releasing is possible for a username in general, an IP address in general, or for the combination of a username with an user agent/ip address
 
