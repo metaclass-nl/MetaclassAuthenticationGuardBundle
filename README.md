@@ -16,6 +16,9 @@ FEATURES
 - To hide wheater an account actually exists for a user name, any user name that is tried too often may be blocked, regardless of the existence and 
 status of an account with that username,
 
+- Makes a logical difference between failed login lockout (done by this bundle) and eventual administrative lockout 
+  (may be done by the UserBundle), so that re-enabling all usernames en masse does not unlock administratively locked users.
+
 - Automatic release of username on authentication success,
 
 - Stores counters instead of individual requests to prevent database flooding from brute force attacks.
