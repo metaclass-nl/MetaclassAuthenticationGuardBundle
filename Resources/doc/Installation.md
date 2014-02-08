@@ -75,12 +75,12 @@ metaclass_authentication_guard:
         name: ""
     tresholds_governor_params:
         counterDurationInSeconds:  300
-        blockUsernamesFor: "10 days" 
+        blockUsernamesFor: "24 minutes"       # actual blocking for up to counterDurationInSeconds shorter!
         limitPerUserName: 3
-        blockIpAddressesFor: "15 minutes"
+        blockIpAddressesFor: "17 minutes"     # actual blocking for up to counterDurationInSeconds shorter!
         limitBasePerIpAddress: 10
         releaseUserOnLoginSuccess: false
-        allowReleasedUserOnAddressFor: "25 minutes" 
+        allowReleasedUserOnAddressFor: "30 days" 
         allowReleasedUserOnAgentFor: "10 days"
         distinctiveAgentMinLength: 30
         
@@ -107,7 +107,8 @@ Configurations
  
 	blockUsernamesFor
 	
-	The duration for which failed logins are countend per username. Values like "3 minutes", "12 hours", "5 years" are allowed.
+	The duration for which failed login counters are summed per username. Values like "3 minutes", "12 hours", "5 years" are allowed.
+	The actual duration of blocking will be up to 'counterDurationInSeconds' shorter.
 	
 	The OWASP Guide: 
 	> If necessary, such as for compliance with a national security standard, a configurable soft lockout of approximately 15-30 minutes should apply, with an error message stating the reason and when the account will become active again.
@@ -133,7 +134,8 @@ Configurations
 
 	blockIpAddressesFor 
 	
-	The duration for which failed logins are countend per ip addess. Values like "3 minutes", "12 hours", "5 years" are allowed.
+	The duration for which failed login counters are summed per ip addess. Values like "3 minutes", "12 hours", "5 years" are allowed.
+	The actual duration of blocking will be up to 'counterDurationInSeconds' shorter.
 	
 	The OWASP Guide suggests a duration of 15 minutes, but also suggests additional measures that are currenly not supported
 	by this Bundle. 

@@ -13,11 +13,12 @@ FEATURES
 
 - Blocks the primary authentication route by both username and client ip address for which authentication failed  too often,
  
-- To hide wheater an account actually exists for a user name, any user name that is tried too often may be blocked, regardless of the existence and 
-status of an account with that username,
+- To hide weather an account actually exists for a username, any username that is tried too often may be blocked, 
+  regardless of the existence and status of an account with that username,
 
 - Makes a logical difference between failed login lockout (done by this bundle) and eventual administrative lockout 
-  (may be done by the UserBundle), so that re-enabling all usernames en masse does not unlock administratively locked users.
+  (may be done by the UserBundle), so that re-enabling all usernames en masse does not unlock administratively locked users
+  (OWASP requirement).
 
 - Automatic release of username on authentication success,
 
