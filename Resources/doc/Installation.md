@@ -5,96 +5,97 @@ Installation
 ------------
 
 0. Check if you have the following setting in your app/conf/security.yml:
-```yml
-    firewalls:
-        secured_area:
-            form_login: 
-```
-If you have no firewall, there is no authentication to guard. If you have some other setting instead of form_login:,
-for example http_basic:, http_digest: or x509:, the current version of this bundle can not guard it. (remember_me: 
-will usually be combined with some other Authentication Listener, currently this bundle can not guard it)
+	```yml
+	    firewalls:
+	        secured_area:
+	            form_login: 
+	```
+	If you have no firewall, there is no authentication to guard. If you have some other setting instead of form_login:,
+	for example http_basic:, http_digest: or x509:, the current version of this bundle can not guard it. (remember_me: 
+	will usually be combined with some other Authentication Listener, currently this bundle can not guard it)
 
-If you have a setting like this:
-```yml
-    firewalls:
-        secured_area:
-            form_login:
-            	id: somecustomserviceid 
-```
-you are using a custom form authenticaton listener service. This bundle can only guard it if your service is configured
-to use the default security.authentication.listener.form.class 
-(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
-and you will have to write your own configuration to use instead of the one under step 4.
+	If you have a setting like this:
+	```yml
+	    firewalls:
+	        secured_area:
+	            form_login:
+	            	id: somecustomserviceid 
+	```
+	you are using a custom form authenticaton listener service. This bundle can only guard it if your service is configured
+	to use the default security.authentication.listener.form.class 
+	(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
+	and you will have to write your own configuration to use instead of the one under step 4.
 
 1. Require the bundle in your composer.json
-```js
-{
-    "require": {
-        "metaclass-nl/authentication-guard-bundle": "*@dev"
-    }
-}
-```
+	```js
+	{
+	    "require": {
+	        "metaclass-nl/authentication-guard-bundle": "*@dev"
+	    }
+	}
+	```
 2. download the bundle by:
 
-``` bash
-$ php composer.phar update metaclass-nl/authentication-guard-bundle
-```
+	``` bash
+	$ php composer.phar update metaclass-nl/authentication-guard-bundle
+	```
 
-Composer will install the bundle to your `vendor/metaclass-nl` folder.
+	Composer will install the bundle to your `vendor/metaclass-nl` folder.
 
 3. Create the database table
 
-```sql
-CREATE TABLE `secu_requests` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dtFrom` datetime NOT NULL,
-  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `ipAddress` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `agent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `loginsFailed` int(11) NOT NULL,
-  `loginsSucceeded` int(11) NOT NULL,
-  `requestsAuthorized` int(11) NOT NULL,
-  `requestsDenied` int(11) NOT NULL,
-  `userReleasedAt` datetime DEFAULT NULL,
-  `addresReleasedAt` datetime DEFAULT NULL,
-  `userReleasedForAddressAndAgentAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `byDtFrom` (`dtFrom`),
-  KEY `byUsername` (`username`,`dtFrom`,`userReleasedAt`),
-  KEY `byAddress` (`ipAddress`,`dtFrom`,`addresReleasedAt`),
-  KEY `byUsernameAndAddress` (`username`,`ipAddress`,`dtFrom`,`userReleasedForAddressAndAgentAt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
-```
-(you may use MyISAM, but processing multiple requests simultanously may result in some (non-fatal) counting race conditions during brute force attacks)
-(you may use some other DBMS that is supported by Doctrine DBAL)
+	```sql
+	CREATE TABLE `secu_requests` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `dtFrom` datetime NOT NULL,
+	  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+	  `ipAddress` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+	  `agent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+	  `loginsFailed` int(11) NOT NULL,
+	  `loginsSucceeded` int(11) NOT NULL,
+	  `requestsAuthorized` int(11) NOT NULL,
+	  `requestsDenied` int(11) NOT NULL,
+	  `userReleasedAt` datetime DEFAULT NULL,
+	  `addresReleasedAt` datetime DEFAULT NULL,
+	  `userReleasedForAddressAndAgentAt` datetime DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `byDtFrom` (`dtFrom`),
+	  KEY `byUsername` (`username`,`dtFrom`,`userReleasedAt`),
+	  KEY `byAddress` (`ipAddress`,`dtFrom`,`addresReleasedAt`),
+	  KEY `byUsernameAndAddress` (`username`,`ipAddress`,`dtFrom`,`userReleasedForAddressAndAgentAt`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+	
+	```
+	(you may use MyISAM, but processing multiple requests simultanously may result in some (non-fatal) counting race conditions during brute force attacks)
+	(you may use some other DBMS that is supported by Doctrine DBAL)
 
 3. Add the bundle to your AppKernel
 
-``` php
-<?php
-// app/AppKernel.php
-
-public function registerBundles()
-{
-    $bundles = array(
-        // ...
-        new Metaclass\AuthenticationGuardBundle\MetaclassAuthenticationGuardBundle.php(),
-    );
-}
-```
+	``` php
+	<?php
+	// app/AppKernel.php
+	
+	public function registerBundles()
+	{
+	    $bundles = array(
+	        // ...
+	        new Metaclass\AuthenticationGuardBundle\MetaclassAuthenticationGuardBundle.php(),
+	    );
+	}
+	```
 
 4. Add the following to your app/config/security.yml:
 
-```yml
-services: 
-    security.authentication.listener.form:
-        class: %metaclass_auth_guard.authentication.listener.form.class%
-        parent: "security.authentication.listener.abstract"
-        abstract: true
-        calls:
-            - [setGovenor, ["@metaclass_auth_guard.tresholds_governor"] ] # REQUIRED
-```
+	```yml
+    services: 
+        security.authentication.listener.form:
+            class: %metaclass_auth_guard.authentication.listener.form.class%
+            parent: "security.authentication.listener.abstract"
+            abstract: true
+            calls:
+                - [setGovenor, ["@metaclass_auth_guard.tresholds_governor"] ] # REQUIRED
+    ```
+
 5. You may also add the following configuraton parameters (defaults shown):
 
 metaclass_authentication_guard:
