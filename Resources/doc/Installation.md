@@ -42,6 +42,33 @@ $ php composer.phar update metaclass-nl/authentication-guard-bundle
 
 Composer will install the bundle to your `vendor/metaclass-nl` folder.
 
+3. Create the database table
+
+```sql
+CREATE TABLE `secu_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dtFrom` datetime NOT NULL,
+  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `ipAddress` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `agent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `loginsFailed` int(11) NOT NULL,
+  `loginsSucceeded` int(11) NOT NULL,
+  `requestsAuthorized` int(11) NOT NULL,
+  `requestsDenied` int(11) NOT NULL,
+  `userReleasedAt` datetime DEFAULT NULL,
+  `addresReleasedAt` datetime DEFAULT NULL,
+  `userReleasedForAddressAndAgentAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `byDtFrom` (`dtFrom`),
+  KEY `byUsername` (`username`,`dtFrom`,`userReleasedAt`),
+  KEY `byAddress` (`ipAddress`,`dtFrom`,`addresReleasedAt`),
+  KEY `byUsernameAndAddress` (`username`,`ipAddress`,`dtFrom`,`userReleasedForAddressAndAgentAt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+```
+(you may use MyISAM, but processing multiple requests simultanously may result in some (non-fatal) counting race conditions during brute force attacks)
+(you may use some other DBMS that is supported by Doctrine DBAL)
+
 3. Add the bundle to your AppKernel
 
 ``` php
