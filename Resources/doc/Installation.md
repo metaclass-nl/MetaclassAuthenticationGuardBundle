@@ -98,6 +98,7 @@ Installation
 
 5. You may also add the following configuraton parameters (defaults shown):
 
+	```yml
 metaclass_authentication_guard:
     entity_manager_login:
         name: ""
@@ -111,6 +112,7 @@ metaclass_authentication_guard:
         allowReleasedUserOnAddressFor: "30 days" 
         allowReleasedUserOnAgentFor: "10 days"
         distinctiveAgentMinLength: 30
+```
         
 Configurations
 --------------
