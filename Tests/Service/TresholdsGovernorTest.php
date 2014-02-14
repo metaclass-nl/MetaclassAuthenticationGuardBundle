@@ -9,11 +9,17 @@ use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForAgentException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForIpAddressException;
 
-class TresholdsGovernorTest extends \PHPUnit_Framework_TestCase 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase 
 {
     function setup() 
     {
         global $kernel;
+        if (!isSet($kernel)) {
+            $kernel = static::createKernel();
+            $kernel->boot();
+        }
         if ('AppCache' == get_class($kernel)) {
             $kernel = $kernel->getKernel();
         }

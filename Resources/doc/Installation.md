@@ -4,7 +4,7 @@ INSTALLATION AND CONFIGURATION
 Installation
 ------------
 
-0. Check if you have the following setting in your app/conf/security.yml:
+1. Check if you have the following setting in your app/conf/security.yml:
 	```yml
 	    firewalls:
 	        secured_area:
@@ -26,7 +26,7 @@ Installation
 	(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
 	and you will have to write your own configuration to use instead of the one under step 4.
 
-1. Require the bundle in your composer.json
+2. Require the bundle in your composer.json
 	```js
 	{
 	    "require": {
@@ -34,7 +34,7 @@ Installation
 	    }
 	}
 	```
-2. download the bundle by:
+3. download the bundle by:
 
 	``` bash
 	$ php composer.phar update metaclass-nl/authentication-guard-bundle
@@ -42,7 +42,7 @@ Installation
 
 	Composer will install the bundle to your `vendor/metaclass-nl` folder.
 
-3. Create the database table
+4. Create the database table
 
 	```sql
 	CREATE TABLE `secu_requests` (
@@ -69,7 +69,7 @@ Installation
 	(you may use MyISAM, but processing multiple requests simultanously may result in some (non-fatal) counting race conditions during brute force attacks)
 	(you may use some other DBMS that is supported by Doctrine DBAL)
 
-3. Add the bundle to your AppKernel
+5. Add the bundle to your AppKernel
 
 	``` php
 	<?php
@@ -84,7 +84,7 @@ Installation
 	}
 	```
 
-4. Add the following to your app/config/security.yml:
+6. Add the following to your app/config/security.yml:
 
 	```yml
     services: 
@@ -96,7 +96,7 @@ Installation
                 - [setGovenor, ["@metaclass_auth_guard.tresholds_governor"] ] # REQUIRED
     ```
 
-5. You may also add the following configuraton parameters (defaults shown):
+7. You may also add the following configuraton parameters (defaults shown):
 
 	```yml
 metaclass_authentication_guard:
@@ -113,7 +113,14 @@ metaclass_authentication_guard:
         allowReleasedUserOnAgentFor: "10 days"
         distinctiveAgentMinLength: 30
 ```
-        
+
+8. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
+	```xml
+        <testsuite name="MetaclassAUthenticationGuardBundle Test Suite">
+            <directory>../vendor/metaclass-nl/authentication-guard-bundle/Metaclass/AuthenticationGuardBundle/Tests</directory>
+         </testsuite>
+	```
+  
 Configurations
 --------------
 
