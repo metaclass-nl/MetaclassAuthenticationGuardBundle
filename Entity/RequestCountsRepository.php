@@ -116,7 +116,7 @@ class RequestCountsRepository extends EntityRepository {
         $conn =$this->getEntityManager()->getConnection();
         $counter = $loginSucceeded ? 'loginsSucceeded' : 'loginsFailed';
         $params = array(
-            'dtFrom' => $datetime,
+            'dtFrom' => $datetime->format('Y-m-d H:i:s'),
             'username' => $username,
             'ipAddress' => $ipAdrdess,
             'agent' => $userAgent,
@@ -124,7 +124,7 @@ class RequestCountsRepository extends EntityRepository {
         $columns = implode(', ', array_keys($params));
         $values = ':'. implode(', :', array_keys($params));
         $sql = "INSERT INTO secu_requests ($columns) VALUES ($values)";
-        $conn->executeUpdate($sql, $params, $types);
+        $conn->executeUpdate($sql, $params);
     }
     
     //WARNING: $columnToUpdate vurnerable for SQL injection!!
@@ -148,7 +148,7 @@ class RequestCountsRepository extends EntityRepository {
         $qb = $conn->createQueryBuilder();
         $qb->update('secu_requests', 'r')
             ->set($columnToUpdate, ':value')
-            ->setParameter('value', $valuet->format('Y-m-d H:i:s'))
+            ->setParameter('value', $value->format('Y-m-d H:i:s'))
             ->where("$columnToUpdate IS NULL")
             ->andWhere("r.dtFrom > :dtLimit")
             ->setParameter('dtLimit', $dtLimit->format('Y-m-d H:i:s'));
