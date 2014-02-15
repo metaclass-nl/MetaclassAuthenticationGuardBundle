@@ -1,7 +1,7 @@
 <?php 
 namespace Metaclass\AuthenticationGuardBundle\Service;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
 
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\IpAddressBlockedException;
@@ -12,7 +12,7 @@ use Metaclass\AuthenticationGuardBundle\Entity\RequestCountsRepository;
 class TresholdsGovernor {
 
     //dependencies
-    protected $entityManager;
+    protected $dbalConnection;
     protected $requestCountsRepo;
     public $dtString; //Y-m-d H:i:s
     
@@ -36,10 +36,9 @@ class TresholdsGovernor {
     protected $failureCountForUserOnAgent;
 
             
-    public function __construct(EntityManager $em, $requestCountsClass, $params) {
-        $this->entityManager = $em;
-        
-        $this->requestCountsRepo = new RequestCountsRepository($em); 
+    public function __construct(Connection $dbalConnection, $requestCountsClass, $params) {
+        $this->dbalConnection = $dbalConnection;
+        $this->requestCountsRepo = new RequestCountsRepository($dbalConnection); 
         $this->dtString = date('Y-m-d H:i:s');
         $this->setPropertiesFromParams($params);
     }

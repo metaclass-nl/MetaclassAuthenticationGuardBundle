@@ -100,7 +100,7 @@ Installation
 
 	```yml
 metaclass_authentication_guard:
-    entity_manager_login:
+    db_connection:
         name: ""
     tresholds_governor_params:
         counterDurationInSeconds:  300
@@ -124,13 +124,13 @@ metaclass_authentication_guard:
 Configurations
 --------------
 
-1. The entity manager to use
+1. The database connection to use
 
-    entity_manager_login:
+    db_connection:
         name: ""
         
-	The default for this setting is emtpy, resulting in the default Entity Manager to be used. 
-	If you some specific value a specific entity manager will be used for storing and retieving RequestCounts. 
+	The default for this setting is emtpy, resulting in the default doctrine dbal connection to be used. 
+	If you specify some specific value a specific connection will be used for storing and retieving RequestCounts data. 
 
 2. Counting duration
 

@@ -3,13 +3,13 @@ namespace Metaclass\AuthenticationGuardBundle\Entity;
 
 class RequestCountsRepository {
     
-    protected $em;
+    protected $dbalConnection;
     
     /**
-     * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
+     * @param Doctrine\DBAL\Connection $dbalConnection The database connection to use.
      */
-    public function __construct($em) {
-        $this->em = $em;
+    public function __construct($dbalConnection) {
+        $this->dbalConnection = $dbalConnection;
     }
     
     //WARNING: $counterColumn, $releaseColumn vurnerable for SQL injection!!
@@ -18,7 +18,7 @@ class RequestCountsRepository {
         if ($username === null && $ipAddress == null && $userAgent == null) {
             throw new BadFunctionCallException ('At least one of username, ipAddress, agent must be supplied');
         }
-        $qb =$this->getEntityManager()->getConnection()->createQueryBuilder();
+        $qb = $this->getConnection()->createQueryBuilder();
         $qb->select("sum(r.$counterColumn)")
             ->from('secu_requests', 'r')
             ->where("r.dtFrom > :dtLimit")
@@ -43,7 +43,7 @@ class RequestCountsRepository {
     
     //currently not used
     public function getDateLastLoginSuccessAfter($dtLimit, $username, $ipAddress=null, $userAgent=null) {
-        $qb =$this->getEntityManager()->getConnection()->createQueryBuilder();
+        $qb = $this->getConnection()->createQueryBuilder();
         $qb->select("r.date")
             ->from('secu_requests', 'r')
             ->where("r.dtFrom > :dtLimit")
@@ -68,7 +68,7 @@ class RequestCountsRepository {
                 AND r.username = ? AND r.ipAddress = ? 
         LIMIT 1";
         
-        $conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         return (boolean) $conn->fetchColumn($sql, array($releaseLimit->format('Y-m-d H:i:s'), $username, $ipAddess));
     }
     
@@ -80,7 +80,7 @@ class RequestCountsRepository {
                 AND r.username = ? AND r.agent = ? 
         LIMIT 1";
         
-        $conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         return (boolean) $conn->fetchColumn($sql, array($releaseLimit->format('Y-m-d H:i:s'), $username, $userAgent));
     }
     
@@ -93,7 +93,7 @@ class RequestCountsRepository {
     }
     
     public function getIdWhereDateAndUsernameAndIpAddressAndAgent($dateTime, $username, $ipAddress, $userAgent) {
-        $conn =$this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->select('r.id')
             ->from('secu_requests', 'r');
@@ -119,7 +119,7 @@ class RequestCountsRepository {
     
     public function createWith($datetime, $ipAdrdess, $username, $userAgent, $loginSucceeded)
     {
-        $conn =$this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         $counter = $loginSucceeded ? 'loginsSucceeded' : 'loginsFailed';
         $params = array(
             'dtFrom' => $datetime->format('Y-m-d H:i:s'),
@@ -136,7 +136,7 @@ class RequestCountsRepository {
     //WARNING: $columnToUpdate vurnerable for SQL injection!!
     public function incrementColumnWhereId($columnToUpdate, $id)
     {
-        $conn =$this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->update('secu_requests', 'r')
             ->set($columnToUpdate, "$columnToUpdate + 1")
@@ -150,7 +150,7 @@ class RequestCountsRepository {
         if ($username === null && $ipAddress == null) {
             throw new BadFunctionCallException ('At least one of username and ip address must be supplied');
         }
-        $conn =$this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->update('secu_requests', 'r')
             ->set($columnToUpdate, ':value')
@@ -177,7 +177,7 @@ class RequestCountsRepository {
         if (!$dtLimit) {
             throw new \Exception('DateTime limit must be specified');
         }
-        $conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->delete('secu_requests')
         ->where("dtFrom < :dtLimit")
@@ -185,9 +185,9 @@ class RequestCountsRepository {
         $qb->execute();
     }
     
-    protected function getEntityManager() 
+    protected function getConnection() 
     {
-        return $this->em;
+        return $this->dbalConnection;
     }
 }
 

@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('entity_manager_login')
+                ->arrayNode('db_connection')
                     ->children()
                         ->scalarNode('name')->defaultValue('')->end()
                     ->end()                    
