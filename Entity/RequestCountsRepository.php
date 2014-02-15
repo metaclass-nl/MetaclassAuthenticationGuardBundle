@@ -1,10 +1,16 @@
 <?php 
 namespace Metaclass\AuthenticationGuardBundle\Entity;
 
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\ResultSetMapping;
-
-class RequestCountsRepository extends EntityRepository {
+class RequestCountsRepository {
+    
+    protected $em;
+    
+    /**
+     * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
+     */
+    public function __construct($em) {
+        $this->em = $em;
+    }
     
     //WARNING: $counterColumn, $releaseColumn vurnerable for SQL injection!!
     public function countWhereSpecifiedAfter($counterColumn, $username, $ipAddress, $userAgent, $dtLimit, $releaseColumn=null)
@@ -179,6 +185,10 @@ class RequestCountsRepository extends EntityRepository {
         $qb->execute();
     }
     
+    protected function getEntityManager() 
+    {
+        return $this->em;
+    }
 }
 
 ?>

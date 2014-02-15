@@ -7,7 +7,7 @@ use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\IpAddressBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForAgentException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForIpAddressException;
-use Metaclass\AuthenticationGuardBundle\Entity\RequestCounts;
+use Metaclass\AuthenticationGuardBundle\Entity\RequestCountsRepository;
 
 class TresholdsGovernor {
 
@@ -38,7 +38,8 @@ class TresholdsGovernor {
             
     public function __construct(EntityManager $em, $requestCountsClass, $params) {
         $this->entityManager = $em;
-        $this->requestCountsRepo = $em->getRepository($requestCountsClass); //'Metaclass\AuthenticationGuardBundle\Entity\RequestCounts'
+        
+        $this->requestCountsRepo = new RequestCountsRepository($em); 
         $this->dtString = date('Y-m-d H:i:s');
         $this->setPropertiesFromParams($params);
     }
