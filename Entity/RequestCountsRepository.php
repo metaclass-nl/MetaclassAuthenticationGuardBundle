@@ -111,17 +111,20 @@ class RequestCountsRepository extends EntityRepository {
             ;
     }
     
-    public function createWith($datetime, $ipAdrdess, $username, $userAgent)
+    public function createWith($datetime, $ipAdrdess, $username, $userAgent, $loginSucceeded)
     {
-        $counts = new RequestCounts();
-        $counts->setUsername($username)
-            ->setIpAddress($ipAdrdess)
-            ->setAgent($userAgent)
-            ->setDtFrom($datetime);
-        
-        $this->getEntityManager()->persist($counts);
-        
-        return $counts;
+        $conn =$this->getEntityManager()->getConnection();
+        $counter = $loginSucceeded ? 'loginsSucceeded' : 'loginsFailed';
+        $params = array(
+            'dtFrom' => $datetime,
+            'username' => $username,
+            'ipAddress' => $ipAdrdess,
+            'agent' => $userAgent,
+            $counter => 1 );
+        $columns = implode(', ', array_keys($params));
+        $values = ':'. implode(', :', array_keys($params));
+        $sql = "INSERT INTO secu_requests ($columns) VALUES ($values)";
+        $conn->executeUpdate($sql, $params, $types);
     }
     
     //WARNING: $columnToUpdate vurnerable for SQL injection!!

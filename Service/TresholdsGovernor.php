@@ -147,9 +147,7 @@ class TresholdsGovernor {
         if ($id) {
             $this->requestCountsRepo->incrementColumnWhereId('loginsSucceeded', $id);
         } else {
-            $counts = $this->requestCountsRepo->createWith($dateTime, $this->ipAddress, $this->username, $this->agent);
-            $counts->setLoginsSucceeded(1);
-            $this->entityManager->flush();
+            $this->requestCountsRepo->createWith($dateTime, $this->ipAddress, $this->username, $this->agent, true);
         }
         if ($this->releaseUserOnLoginSuccess) {
             $this->releaseUserName();
@@ -165,9 +163,7 @@ class TresholdsGovernor {
         if ($id) {
             return $this->requestCountsRepo->incrementColumnWhereId('loginsFailed', $id); 
         }
-        $counts = $this->requestCountsRepo->createWith($dateTime, $this->ipAddress, $this->username, $this->agent);
-        $counts->setLoginsFailed(1);
-        $this->entityManager->flush();
+        $this->requestCountsRepo->createWith($dateTime, $this->ipAddress, $this->username, $this->agent, false);
     }
     
     /** only to be combined with new password */
