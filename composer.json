@@ -3,7 +3,6 @@
     "type": "symfony-bundle",
     "description": "Authentication Guard for Symfony 2, aims to protect authentication against brute force and dictionary attacks",
     "keywords": ["security", "brute force", "dictionary attack", "login", "authentication"],
-    "homepage": "http://friendsofsymfony.github.com",
     "license": "MIT",
     "authors": [
         {
