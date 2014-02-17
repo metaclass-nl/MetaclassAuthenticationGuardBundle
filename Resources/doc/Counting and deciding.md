@@ -14,10 +14,11 @@ consideraby and use up a lot of permanent storage space. Instead it creates reco
 incremented for some time. 
 
 The TesholdsGovernor inserts a record in the RequestCounts table for each unique combination of username, IP address and
-user agent. The record holds a counter for the number of logins that succeeded and another for the number of logins that failed.
+cookieToken (cookieToken are currently not used and are allways an empty string). 
+The record holds a counter for the number of logins that succeeded and another for the number of logins that failed.
 The counter that corresponds to the login result is initially set to one, the other to zero. 
 
-If another login request is received from the same IP address and user agent for the same username, the existing
+If another login request is received from the same IP address for the same username, the existing
 RequestCounts records counter that corresponds to the login result is incremented, unless it has been released 
 (see under Releasing).
 
@@ -30,9 +31,9 @@ period a new record is created on the receival of a login request.
 To simplify things, it is advisable to set 'counterDurationInSeconds' to a value by which a day or an hour can be devided. 
 For example if you set it to 3 minutes, the first counter period of a day will start at 00:00:00, 
 the second at, 00:03:00, the third at 00:06:00, and so on until 00:57:00. Then everyting will be repeated for the
-next hour, the next day etc. So if a login request is received with some combination of IP address, user agent and username
+next hour, the next day etc. So if a login request is received with some combination of IP address and username
 at 00:02:23 the TresholdsGovernor will look for a record with dtFrom 00:00:00. If another login request is received 
-at 00:02:57 from the same IP address and user agent for the same username, a counter from record previously made
+at 00:02:57 from the same IP address for the same username, a counter from record previously made
 with dtFrom 00:00:00 is incremented. But if anouther login request is received at 00:03:01, a new record is created
 with dtFrom 00:03:00.
 
@@ -55,8 +56,8 @@ It will only set the released field of RequestCounts whose dtFrom is less then t
 'blockIpAddressesFor' setting duration ago, and only where the field setted is null.
 
 When a users username is under attack, it may soone become blocked again. To allow the user in while still 
-protecting against the attack, a username may be released *only* for an IP address and user agent. The  
-TresholdsGovernor then sets the DateTime of the release to the userReleasedForAddressAndAgentAt of all
+protecting against the attack, a username may be released *only* for an IP address. The  
+TresholdsGovernor then sets the DateTime of the release to the userReleasedForAddressAndCookieAt of all
 RequestCounts records whose dtFrom is less then the 'blockUsernamesFor' setting duration ago and whose 
 IP address or user name matches one of the specified. 
 
@@ -66,10 +67,10 @@ the username is released (setting the 'userReleasedAt' field). And only failures
 the total. 
 
 This allows slow/distributed attacks to go on for a long period when the user logs in frequently.
-If the 'releaseUserOnLoginSuccess' option is set to false, user names are only released for the IP address and 
-user agent the successfull login was made from (setting the 'userReleasedForAddressAndAgentAt' field). 
-The username may stay or become blocked for all the other IP addresses and user agents. 
-The disadvantage is that the may be blocked when his IP address or user agent changes,
+If the 'releaseUserOnLoginSuccess' option is set to false, user names are only released for the IP address where
+the successfull login was made from (setting the 'userReleasedForAddressAndCookieAt' field). 
+The username may stay or become blocked for all the other IP addresses. 
+The disadvantage is that the may be blocked when his IP address changes,
 for example because he wants to log in from a different device or connection.
 
 
@@ -82,13 +83,14 @@ per IP address is higher then the 'limitBasePerIpAddress' setting, it will throw
 If the number of failures per username is higer hten the 'limitPerUserName' setting, it will throw a 
 UsernameBlockedException.
 
-A special case is made for when the username has been released for the IP address or user agent the
+A special case is made for when the username has been released for the IP address the
 login is made from, but only when the last release is less then the 'blockUsernamesFor' setting duration ago.
 If the user has been released on the IP address, only failures are added that are made from the same IP address. 
 If the total is higher then the 'limitPerUserName' setting, it will throw a UsernameBlockedForIpAddressException.
-If the user has been released for the user agent (but not on the IP address), only failures are added that are 
-made from the same user agent**. If the total is higher then the  'limitPerUserName' setting, it will throw 
-UsernameBlockedForAgentException.
+
+Not used: If the user has been released for the cookieToken (but not on the IP address), only failures are added that are 
+made from the same cookieToken. If the total is higher then the  'limitPerUserName' setting, it will throw 
+UsernameBlockedForCookieException. 
 
 All these exceptions inherit from AuthenticationBlockedException. 
 

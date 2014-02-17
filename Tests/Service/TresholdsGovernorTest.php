@@ -6,7 +6,7 @@ use Metaclass\AuthenticationGuardBundle\Service\TresholdsGovernor;
 use Metaclass\AuthenticationGuardBundle\Exception\AuthenticationBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\IpAddressBlockedException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedException;
-use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForAgentException;
+use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForCookieException;
 use Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForIpAddressException;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -30,11 +30,11 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->governer = clone $service;
 
         $this->governer->dtString = '1980-07-01 00:00:00';
-        $this->governer->distinctiveAgentMinLength = 6;
         $this->governer->counterDurationInSeconds = 300; //5 minutes
         $this->governer->blockUsernamesFor = '30 days'; 
         $this->governer->blockIpAddressesFor = '30 days'; //not very realistic, but should still work
-        $this->governer->allowReleasedUserOnAddressFor = '30 days'; //30 days does not work properly
+        $this->governer->allowReleasedUserOnAddressFor = '30 days'; 
+        $this->governer->allowReleasedUserByCookieFor =  '10 days';
     }
     
     protected function get($propName)
@@ -62,61 +62,61 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     
     function testInitFor() 
     {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count for ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count for username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
     }
     
     function testRegisterAuthenticationFailure() 
     {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->registerAuthenticationFailure();
         
-        $this->governer->initFor('192.168.255.250', 'testuserX', 'xxx', 'agentX');
+        $this->governer->initFor('192.168.255.250', 'testuserX', 'xxx', 'cookieTokenX');
         $this->governer->registerAuthenticationFailure();
         
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by other username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for other username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for other username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for other username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is other user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is other user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is other user released by cookie');
          
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
         $this->assertEquals(1, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address');
-        $this->assertEquals(1, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent!');
+        $this->assertEquals(1, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(1, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(1, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent');        
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cookie');        
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released on other cookie');
     }
 
     function checkAuthenticationJustFailed() 
     {
         $this->governer->limitPerUserName = 2;
         $this->governer->limitBasePerIpAddress = 2;
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count for ip address');
         $this->assertEquals(1, $this->get('failureCountForUserName'), 'failure count for username');
         $this->assertEquals(1, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(1, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(1, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         
         $this->governer->checkAuthentication(true); //assert no exception
         $this->assertEquals(2, $this->get('failureCountForIpAddress'), 'failure count for ip address');
         $this->assertEquals(2, $this->get('failureCountForUserName'), 'failure count for username');
         $this->assertEquals(2, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(2, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(2, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         
         //count increments because 'just failed' are transient, governor is reinitialized in next test
     }
@@ -125,7 +125,7 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     {
         $this->governer->limitPerUserName = 3;
         $this->governer->limitBasePerIpAddress = 1;
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->checkAuthentication(); //assert no exception
 
         $this->governer->limitBasePerIpAddress = 0;
@@ -155,105 +155,105 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     
     function testRegisterAuthenticationSuccess() 
     {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->registerAuthenticationSuccess();
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(3, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by  username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         $this->assertEquals(3, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by other username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for other username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for other username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for other username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is other user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is other user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is other user released by cookie');
         
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
         $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(3, $this->get('failureCountForIpAddress'), 'failure count by ip address');
-        $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent');        
+        $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cookie');        
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released on by cookie');
         
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
-        $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username, other addres and other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent, other address');        
+        $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username, other addres and other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cookie, other address');        
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released on by cookie');
     }
     
     function testRegisterAuthenticationFailureAfterSuccess() 
     {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->registerAuthenticationFailure();
         
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         $this->assertEquals(4, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by other username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for other username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for other username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for other username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is other user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is other user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is other user released by cookie');
          
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
         $this->assertEquals(4, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address');
-        $this->assertEquals(1, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent!');
+        $this->assertEquals(1, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(4, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(4, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(1, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent');        
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cookie');        
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by other cookie');
     }
     
-    function testCheckAuthenticationWithUserReleasedOnIpAddressAndAgent() 
+    function testCheckAuthenticationWithUserReleasedOnIpAddressAndCookie() 
     {
         $this->governer->dtString = '1980-07-01 00:05:00'; //5 minutes later
         
         $this->governer->limitPerUserName = 1;
         $this->governer->limitBasePerIpAddress = 4;
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->checkAuthentication(); //assert no exception
     
         $this->governer->limitBasePerIpAddress = 3;
         $this->governer->checkAuthentication(); //assert no exception
     
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
-        $this->governer->checkAuthentication(); //assert no exception because of agent released
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
+        $this->governer->checkAuthentication(); //assert no exception because of cookieToken released
     
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->governer->checkAuthentication(); //assert no exception because of ip address released
     
         $this->governer->limitPerUserName = 4;
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->governer->checkAuthentication(); //assert no exception on other ip address
     
         $this->governer->limitBasePerIpAddress = 3;
         $this->governer->limitPerUserName = 1;
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         try {
             $result = $this->governer->checkAuthentication(); //registers authentication failure for testuser2
         } catch (AuthenticationBlockedException $e) {
@@ -263,15 +263,15 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Metaclass\AuthenticationGuardBundle\Exception\IpAddressBlockedException', $result);
         $this->assertEquals("IP Adress '192.168.255.255' is blocked: 4 attempts failed", $result->getMessage());
 
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
-        $this->governer->checkAuthentication(); //assert no exception because of agent released
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
+        $this->governer->checkAuthentication(); //assert no exception because of cookieToken released
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->governer->checkAuthentication(); //assert no exception because of ip address released
         
         $this->governer->limitPerUserName = 0;
         try {
-            $result = $this->governer->checkAuthentication(); //registers authentication failure on agent2 and ip 255
+            $result = $this->governer->checkAuthentication(); //registers authentication failure on cookieToken2 and ip 255
         } catch (AuthenticationBlockedException $e) {
             $result = $e;
         }
@@ -279,184 +279,173 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForIpAddressException', $result);
         $this->assertEquals("Username 'testuser1' is blocked for IP Address '192.168.255.255': 1 attempts failed", $result->getMessage());
 
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
         try {
-            $result = $this->governer->checkAuthentication(); //registers authentication failure on ip 254 and agent1
+            $result = $this->governer->checkAuthentication(); //registers authentication failure on ip 254 and cookieToken1
         } catch (AuthenticationBlockedException $e) {
             $result = $e;
         }
         $this->assertNotNull($result, 'result');
-        $this->assertInstanceOf('Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForAgentException', $result);
-        $this->assertEquals("Username 'testuser1' is blocked for agent 'agent1': 1 attempts failed", $result->getMessage());
+        $this->assertInstanceOf('Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedForCookieException', $result);
+        $this->assertEquals("Username 'testuser1' is blocked for cookie 'cookieToken1': 1 attempts failed", $result->getMessage());
 
         $this->governer->limitPerUserName = 1;
-        $this->governer->checkAuthentication(); //assert no exception because of agent released
-        
-        $this->governer->distinctiveAgentMinLength = 7;
-        try {
-            $result = $this->governer->checkAuthentication(); //registers authentication failure on ip 254 and agent1
-        } catch (AuthenticationBlockedException $e) {
-            $result = $e;
-        }
-        $this->assertNotNull($result, 'result');
-        $this->assertInstanceOf('Metaclass\AuthenticationGuardBundle\Exception\UsernameBlockedException', $result);
-        $this->assertEquals("Username 'testuser1' is blocked: 5 attempts failed", $result->getMessage());
-        
+        $this->governer->checkAuthentication(); //assert no exception because of cookieToken released
         
     }
     
     function testBlockingDurations() 
     {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(6, $this->get('failureCountForIpAddress'), 'failure count by ip address');
-        $this->assertEquals(7, $this->get('failureCountForUserName'), 'failure count by username');
+        $this->assertEquals(6, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(2, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(3, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(2, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is other released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
         $this->governer->dtString = '1980-07-10 23:59:59';  //just less then 10 days after first request
         
         $this->governer->blockUsernamesFor = '10 days';
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(6, $this->get('failureCountForIpAddress'), 'failure count by ip address');
-        $this->assertEquals(7, $this->get('failureCountForUserName'), 'failure count by username');
+        $this->assertEquals(6, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(2, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(3, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(2, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
         $this->governer->blockUsernamesFor = '863995 seconds'; //5 seconds less then 10 days
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(6, $this->get('failureCountForIpAddress'), 'failure count by ip address');
-        $this->assertEquals(3, $this->get('failureCountForUserName'), 'failure count by username');
+        $this->assertEquals(2, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(1, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(2, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(1, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
 
         $this->governer->blockIpAddressesFor = '10 days';
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(6, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         
         $this->governer->blockIpAddressesFor = '863995 seconds'; //5 seconds less then 10 days
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(2, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         
     }
-/* */
+
     function testReleaseDurations() 
     {
         $this->governer->dtString = '1980-07-11 00:00:00'; //10 days after first request and releases
         
         $this->governer->allowReleasedUserOnAddressFor = '10 days';
-        $this->governer->allowReleasedUserOnAgentFor = '10 days';
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->allowReleasedUserByCookieFor = '10 days';
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
         $this->governer->allowReleasedUserOnAddressFor = '863995 seconds'; //5 seconds less then 10 days
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         //should not be influenced:
         $this->assertEquals(2, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(3, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(2, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
                 
         $this->governer->allowReleasedUserOnAddressFor = '10 days';
-        $this->governer->allowReleasedUserOnAgentFor = '863995 seconds'; //5 seconds less then 10 days
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->allowReleasedUserByCookieFor = '863995 seconds'; //5 seconds less then 10 days
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         //should not be influenced:
         $this->assertEquals(2, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(3, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(2, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         
     }
     
     function testDeleteCounts1() 
     {
         $this->get('requestCountsRepo')->deleteCountsUntil(new \DateTime('1981-01-01'));
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by cookie');
     }
 
     function testRegisterAuthenticationSuccessReleasingUser() {
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->releaseUserOnLoginSuccess = true;
         $this->governer->registerAuthenticationFailure();
         $this->governer->registerAuthenticationSuccess();
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by  username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by other username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for other username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for other username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for other username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is other user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is other user released on agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is other user released by cookie');
         
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertTrue($this->get('isUserReleasedOnAgent'), 'is user released on agent');
+        $this->assertTrue($this->get('isUserReleasedByCookie'), 'is user released by cookie');
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count by ip address');
-        $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent');
+        $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cppkie');
         $this->assertTrue($this->get('isUserReleasedOnAddress'), 'is user released on address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by other cookie');
         
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by other ip address');
-        $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username, other addres and other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address, other agent');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on other agent, other address');
+        $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username, other addres and other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on other address, other cookieToken');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by other cookie, other address');
         $this->assertFalse($this->get('isUserReleasedOnAddress'), 'is user released on other address');
-        $this->assertFalse($this->get('isUserReleasedOnAgent'), 'is user released on other agent');
+        $this->assertFalse($this->get('isUserReleasedByCookie'), 'is user released by other cookie');
     }        
     
     function testCheckAuthenticationWithUserReleased() 
     {
         $this->governer->limitPerUserName = 1;
         $this->governer->limitBasePerIpAddress = 1;
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->governer->checkAuthentication(); //assert no exception, which is normal
 
         $this->governer->limitBasePerIpAddress = 0;
         $this->governer->checkAuthentication(); //assert no exception
 
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent1');
-        $this->governer->checkAuthentication(); //assert no exception because of agent released
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
+        $this->governer->checkAuthentication(); //assert no exception because of cookieToken released
         
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->governer->checkAuthentication(); //assert no exception because of ip address released
         
         $this->governer->limitBasePerIpAddress = 1;
         $this->governer->limitPerUserName = 0;
-        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'agent2');
+        $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->governer->checkAuthentication(); //assert no exception because user released
         
         $this->governer->limitBasePerIpAddress = 0;
-        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         try {
             $result = $this->governer->checkAuthentication(); //registers authentication failure for testuser2
         } catch (AuthenticationBlockedException $e) {
@@ -470,11 +459,11 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     function testDeleteCounts2() 
     {
         $this->get('requestCountsRepo')->deleteCountsUntil(new \DateTime('1981-01-01'));
-        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'agent1');
+        $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(0, $this->get('failureCountForIpAddress'), 'failure count by ip address');
         $this->assertEquals(0, $this->get('failureCountForUserName'), 'failure count by username');
         $this->assertEquals(0, $this->get('failureCountForUserOnAddress'), 'failure count for username on address');
-        $this->assertEquals(0, $this->get('failureCountForUserOnAgent'), 'failure count for username on agent');
+        $this->assertEquals(0, $this->get('failureCountForUserByCookie'), 'failure count for username by cookie');
     }
 
     function assertNoException($value, $message = '') 

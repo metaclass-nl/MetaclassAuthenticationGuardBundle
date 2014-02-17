@@ -50,14 +50,14 @@ CREATE TABLE `secu_requests` (
   `dtFrom` datetime NOT NULL,
   `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `ipAddress` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `agent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `cookieToken` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `loginsFailed` int(11) NOT NULL DEFAULT '0',
   `loginsSucceeded` int(11) NOT NULL DEFAULT '0',
   `requestsAuthorized` int(11) NOT NULL DEFAULT '0',
   `requestsDenied` int(11) NOT NULL DEFAULT '0',
   `userReleasedAt` datetime DEFAULT NULL,
   `addresReleasedAt` datetime DEFAULT NULL,
-  `userReleasedForAddressAndAgentAt` datetime DEFAULT NULL,
+  `userReleasedForAddressAndCookieAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `byDtFrom` (`dtFrom`),
   KEY `byUsername` (`username`,`dtFrom`,`userReleasedAt`),
@@ -109,8 +109,6 @@ metaclass_authentication_guard:
         limitBasePerIpAddress: 10
         releaseUserOnLoginSuccess: false
         allowReleasedUserOnAddressFor: "30 days" 
-        allowReleasedUserOnAgentFor: "10 days"
-        distinctiveAgentMinLength: 30
 ```
 
 8. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
@@ -215,26 +213,8 @@ Configurations
 	This setting basically says how long this vacation may be and still be allowed to
 	log in because of his user agent.
 	
-9. Username release duration by user agent
 
-	allowReleasedUserOnAgentFor
-
-	For how long a username will remain released per IP address. Values like "3 minutes", "12 hours", "5 years" are allowed.
-
-	If a user logs in frequently this will frequently produce new releases. This allows the user to
-	log in from the same user agent even if his username is under constant attack, as long as the attacks 
-	do not come from with the same user agent string. However, he may take a vacation and not log in for 
-	some weeks or so. This setting basically says how long this vacation may be and still be allowed to
-	log in because of his user agent.
-	
-10. User agent distinction length
-
-	distinctiveAgentMinLength
-	
-	The users browser may pass a short user agent string or none at all.
-	User agent strings that are shorter then the number of characters set here will not qualify for username release by user agent. 
-	
 Notes
 
-- releasing is possible for a username in general, an IP address in general, or for the combination of a username with an user agent/ip address
+- releasing is possible for a username in general, an IP address in general, or for the combination of a username with an ip address
 

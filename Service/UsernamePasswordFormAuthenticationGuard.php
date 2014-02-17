@@ -94,7 +94,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
                  $request->getClientIp()
                 , $filteredCred[0]
                 , $filteredCred[1]
-                , $request->headers->get('user-agent')
+                , '' //cookieToken not yet used (setting and getting cookies NYI)
              );
         
         if ($originalCred != $filteredCred) { //we can not accept invalid characters

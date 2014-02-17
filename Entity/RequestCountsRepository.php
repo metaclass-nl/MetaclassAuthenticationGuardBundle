@@ -13,10 +13,10 @@ class RequestCountsRepository {
     }
     
     //WARNING: $counterColumn, $releaseColumn vurnerable for SQL injection!!
-    public function countWhereSpecifiedAfter($counterColumn, $username, $ipAddress, $userAgent, $dtLimit, $releaseColumn=null)
+    public function countWhereSpecifiedAfter($counterColumn, $username, $ipAddress, $cookieToken, $dtLimit, $releaseColumn=null)
     {
-        if ($username === null && $ipAddress == null && $userAgent == null) {
-            throw new BadFunctionCallException ('At least one of username, ipAddress, agent must be supplied');
+        if ($username === null && $ipAddress == null && $cookieToken == null) {
+            throw new BadFunctionCallException ('At least one of username, ipAddress, cookieToken must be supplied');
         }
         $qb = $this->getConnection()->createQueryBuilder();
         $qb->select("sum(r.$counterColumn)")
@@ -31,9 +31,9 @@ class RequestCountsRepository {
             $qb->andWhere("r.ipAddress = :ipAddress")
                 ->setParameter('ipAddress', $ipAddress);
         }
-        if ($userAgent !== null) {
-            $qb->andWhere("r.agent = :agent")
-                ->setParameter('agent', $userAgent);
+        if ($cookieToken !== null) {
+            $qb->andWhere("r.cookieToken = :token")
+                ->setParameter('token', $cookieToken);
         }
         if ($releaseColumn !== null) {
             $qb->andWhere("$releaseColumn IS NULL");
@@ -42,7 +42,7 @@ class RequestCountsRepository {
     }
     
     //currently not used
-    public function getDateLastLoginSuccessAfter($dtLimit, $username, $ipAddress=null, $userAgent=null) {
+    public function getDateLastLoginSuccessAfter($dtLimit, $username, $ipAddress=null, $cookieToken=null) {
         $qb = $this->getConnection()->createQueryBuilder();
         $qb->select("r.date")
             ->from('secu_requests', 'r')
@@ -54,9 +54,9 @@ class RequestCountsRepository {
             $qb->andWhere("r.ipAddress = :ipAddress")
                 ->setParameter('ipAddress', $ipAddress);
         }
-        if ($userAgent !== null) {
-               $qb->andWhere("(r.agent = :agent)")
-                  ->setParameter('agent', $userAgent);
+        if (cookieToken !== null) {
+               $qb->andWhere("(r.cookieToken = :token)")
+                  ->setParameter('token', $cookieToken);
         }
     }
     
@@ -64,7 +64,7 @@ class RequestCountsRepository {
     {
         $sql = "SELECT id
         FROM secu_requests r
-        WHERE userReleasedForAddressAndAgentAt >= ?
+        WHERE userReleasedForAddressAndCookieAt >= ?
                 AND r.username = ? AND r.ipAddress = ? 
         LIMIT 1";
         
@@ -72,52 +72,53 @@ class RequestCountsRepository {
         return (boolean) $conn->fetchColumn($sql, array($releaseLimit->format('Y-m-d H:i:s'), $username, $ipAddess));
     }
     
-    public function isUserReleasedOnAgentFrom($username, $userAgent, $releaseLimit)
+    public function isUserReleasedByCookieFrom($username, $cookieToken, $releaseLimit)
     {
         $sql = "SELECT id
         FROM secu_requests r
-        WHERE userReleasedForAddressAndAgentAt >= ?
-                AND r.username = ? AND r.agent = ? 
+        WHERE userReleasedForAddressAndCookieAt >= ?
+                AND r.username = ? AND r.cookieToken = ? 
         LIMIT 1";
         
         $conn = $this->getConnection();
-        return (boolean) $conn->fetchColumn($sql, array($releaseLimit->format('Y-m-d H:i:s'), $username, $userAgent));
+        return (boolean) $conn->fetchColumn($sql, array($releaseLimit->format('Y-m-d H:i:s'), $username, $cookieToken));
     }
-    
-    public function findByDateAndUsernameAndIpAddressAndAgent($dateTime, $ipAddress, $username)
-    {
-        $qb = $this->createQueryBuilder('r');
-        $this->qbWhereDateAndIpAddressAndUsername($qb, $dateTime, $ipAddress, $username);
 
-        return $qb->getQuery()->getOneOrNullResult();
-    }
+// may not work without entity
+//    public function findByDateAndUsernameAndIpAddressAndCookie($dateTime, $ipAddress, $username, $cookieToken)
+//    {
+//        $qb = $this->createQueryBuilder('r');
+//        $this->qbWhereDateAndUsernameAndIpAddressAndCookie($qb, $dateTime, $username, $ipAddress, $cookieToken);
+//
+//        return $qb->getQuery()->getOneOrNullResult();
+//    }
     
-    public function getIdWhereDateAndUsernameAndIpAddressAndAgent($dateTime, $username, $ipAddress, $userAgent) {
+    public function getIdWhereDateAndUsernameAndIpAddressAndCookie($dateTime, $username, $ipAddress, $cookieToken) {
         $conn = $this->getConnection();
         $qb = $conn->createQueryBuilder();
         $qb->select('r.id')
             ->from('secu_requests', 'r');
-        $this->qbWhereDateAndUsernameAndIpAddressAndAgent($qb, $dateTime, $username, $ipAddress, $userAgent);
+        $this->qbWhereDateAndUsernameAndIpAddressAndCookie($qb, $dateTime, $username, $ipAddress, $cookieToken);
         return $qb->execute()->fetchColumn();
     }
     
     //WARNING: $releaseColumn vurnerable for SQL injection!!
-    protected function qbWhereDateAndUsernameAndIpAddressAndAgent($qb, $dateTime, $username, $ipAddress, $userAgent) {
+    protected function qbWhereDateAndUsernameAndIpAddressAndCookie($qb, $dateTime, $username, $ipAddress, $cookieToken) {
         $qb->where('r.username = :username')
             ->andWhere('r.ipAddress = :ipAddress')
             ->andWhere('r.dtFrom = :dtFrom')
-            ->andWhere('r.agent = :agent')
+            ->andWhere('r.cookieToken = :token')
             ->andWhere("addresReleasedAt IS NULL")
             ->andWhere("userReleasedAt IS NULL")
-            ->andWhere("userReleasedForAddressAndAgentAt IS NULL")
+            ->andWhere("userReleasedForAddressAndCookieAt IS NULL")
             ->setParameter('username', $username)
             ->setParameter('ipAddress', $ipAddress)
             ->setParameter('dtFrom', $dateTime->format('Y-m-d H:i:s') )
-            ->setParameter('agent', $userAgent);
+            ->setParameter('token', $cookieToken);
             ;
     }
     
-    public function createWith($datetime, $ipAdrdess, $username, $userAgent, $loginSucceeded)
+    public function createWith($datetime, $ipAdrdess, $username, $cookieToken, $loginSucceeded)
     {
         $conn = $this->getConnection();
         $counter = $loginSucceeded ? 'loginsSucceeded' : 'loginsFailed';
@@ -125,7 +126,7 @@ class RequestCountsRepository {
             'dtFrom' => $datetime->format('Y-m-d H:i:s'),
             'username' => $username,
             'ipAddress' => $ipAdrdess,
-            'agent' => $userAgent,
+            'cookieToken' => $cookieToken,
             $counter => 1 );
         $columns = implode(', ', array_keys($params));
         $values = ':'. implode(', :', array_keys($params));
@@ -146,7 +147,7 @@ class RequestCountsRepository {
     }
     
     //WARNING: $columnToUpdate vurnerable for SQL injection!!
-    public function updateColumnWhereColumnNullAfterSupplied($columnToUpdate, $value, $dtLimit, $username, $ipAddress, $userAgent) {
+    public function updateColumnWhereColumnNullAfterSupplied($columnToUpdate, $value, $dtLimit, $username, $ipAddress, $cookieToken) {
         if ($username === null && $ipAddress == null) {
             throw new BadFunctionCallException ('At least one of username and ip address must be supplied');
         }
@@ -166,9 +167,9 @@ class RequestCountsRepository {
             $qb->andWhere("r.ipAddress = :ipAddress")
                 ->setParameter('ipAddress', $ipAddress);
         }
-        if ($userAgent !== null) {
-            $qb->andWhere("r.agent = :agent")
-                ->setParameter('agent', $userAgent);
+        if ($cookieToken !== null) {
+            $qb->andWhere("r.cookieToken = :token")
+                ->setParameter('token', $cookieToken);
         }
         $qb->execute();
     }

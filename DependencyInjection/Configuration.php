@@ -35,9 +35,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('blockIpAddressesFor')->defaultValue('15 minutes')->end()
                         ->scalarNode('limitBasePerIpAddress')->defaultValue(10)->end()
                         ->scalarNode('allowReleasedUserOnAddressFor')->defaultValue('25 minutes')->end()
-                        ->scalarNode('allowReleasedUserOnAgentFor')->defaultValue('10 days')->end()
                         ->scalarNode('releaseUserOnLoginSuccess')->defaultValue(false)->end()
-                        ->scalarNode('distinctiveAgentMinLength')->defaultValue(30)->end()
                     ->end()
                 ->end()
             ->end();

@@ -27,7 +27,8 @@ FEATURES
 REQUIREMENTS
 ------------
 This bundle is for the symfony framework and requires Symfony ~2.3 and PHP >=5.3.3
-Uses Doctrine >=2.2.3 and was tested with MySQL 5.5.
+Uses Doctrine >=2.2.3 (actually only dbal is used, but doctrine/doctrine-bundle is still required) 
+and was tested with MySQL 5.5.
 
 RELEASE NOTES
 -------------
@@ -44,8 +45,6 @@ Throws specific types of Exceptions for different situations (for logging purpos
 login form to hyde differences between them that should not be reported to users.
 
 Does not garbage-collect nor pack stored RequestCounts. 
-
-Unit tests of the TresholdGovernor class are included, but only run from a UnitTestController (not included in the bundle).
 
 DOCUMENTATION
 -------------
