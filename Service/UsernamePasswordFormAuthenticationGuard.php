@@ -24,7 +24,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\ProviderNotFoundException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-//also uses Metaclass\AuthenticationGuardBundle\Service\TresholdsGovernor
+
+use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
 
 class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationListener {
     
@@ -102,7 +103,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
             throw new BadCredentialsException('Credentials contain invalid character(s)');
         }
         
-        $this->governor->checkAuthentication(); //may register failure and throw AuthenticationBlockedException
+        $this->throwExceptionOnRejection($this->governor->checkAuthentication()); //may register failure 
         
         //not blocked, try to authenticate
         try {
@@ -127,6 +128,15 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         }
 
         return $newToken;
+    }
+    
+    protected function throwExceptionOnRejection($rejection)
+    {
+        if ($rejection) {
+            $exceptionClass = 'Metaclass\\AuthenticationGuardBundle\\Exception\\'
+                . subStr(get_class($rejection), 35). 'Exception';
+            throw new $exceptionClass(strtr($rejection->message, $rejection->parameters));
+        }
     }
     
     protected function checkCrsfToken(Request $request) 

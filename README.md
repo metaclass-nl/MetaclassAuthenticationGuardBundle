@@ -49,8 +49,8 @@ Does not garbage-collect nor pack stored RequestCounts.
 DOCUMENTATION
 -------------
 - [Installation and configuration](Resources/doc/Installation.md)
-- [Counting and deciding](Resources/doc/Counting and deciding.md)
 - [Hooking into Symfony](Resources/doc/Hooking into Symfony.md)
+- [Counting and deciding](https://github.com/metaclass-nl/tresholds-governor/doc/Counting and deciding.md)
 	
 SUPPORT
 -------

@@ -1,0 +1,160 @@
+		SecuBundle
+		x toevoegen
+		+ Entity maken
+		x UserChecker maken
+		- username and ip failed login confidence govener
+			ivm timing attack eerst authentication doen. 
+				x	UserAuthenticationProvider::authenticate lekt user not found via timing!
+					UserProvider returnt niet bestaande user met onmogelijke password hash
+			x AuthenticationGuard 	
+				x class maken en service injecten
+				x exceptions catchen
+				x Governer aansturen
+			x AuthenticationGovernor maken die de beslissingen neemt
+				x tellingen opslaan en bijwerken in de database
+				x tellingen ophalen uit de database
+				x vrijgeven fucnties
+				x bij succes vrijgeven
+				x tests uitbreiden voor oude requests en oude releases
+				x tests mbt undistinctive agent
+				x mbt blokkeren per user:
+					x userReleasedForAddressAndAgentAt zetten bij successvolle login
+					x of userReleasedAt
+					x tests counting
+					x tests checkAuthentication
+				x configuraties naar yml verplaatsen
+				+ user-vanuit-email functie voor vrijgeven username (elk ip address?)
+					je moet dan wel je wachtwoord wijzigen
+				+ user-vanuit-email functie voor vrijgeven combinatie van username en ip address/agent
+					als dit is gedaan willen we voor deze username de failedLogins vanaf andere ip adressen/agents niet meer meetellen
+	SecuBundle:
+		x AuthenticationGuard:
+			x clear als andere username na re-authenticate
+				sessie blijft bestaan als zelfde user. ook als andere user
+				komt door security: session_fixation_strategy:  migrate (alt: invalidate). 
+					nadeel van invalidate is dat we de scouting data zullen gaan verliezen, daarom opgelost in Guard
+	SecuBundle
+			x AuthenticationGuard no longer inherits from UsernamePasswordFormAuthenticationListener
+			x login username en password are filtered and validated
+			x no longer does authentication when blocking
+------------
+- rename Metaclass\SecuBundle to Metaclass\AuthenticationGuardBundle
+- rename Metaclass\\SecuBundle to Metaclass\\AuthenticationGuardBundle
+- rename MetaclassSecuBundle to MetaclassAuthenticationGuardBundle
+- rename MetaclassSecuExtension to MetaclassAuthenticationGuardExtension
+- rename metaclass_secu to metaclass_auth_guard
+- rename AuthenticationGuard to UsernamePasswordFormAuthenticationGuard
+- rename AuthenticationGovernor to TresholdsGovernor
+changed:
+app
+- appKernel.php
+app/cofig
+- config_dev.yml
+- config_prod.yml
+- routing.yml
+- security.yml
+src/Metaclass/UserBundle/Controller
+- LoginController.php
+src/Metaclass/SecuBundle to be deleted and replaced by AuthenticationGuardBundle
+--------
+AuthenticationGuardBundle
+- added configuration option for entitymanager name
+- added README.md, LICENSE, composer.json
+- removed default view
+----------
+AuthenticationGuardBundle
+- TresholdsGovernor::releaseUserName, ::releaseUserNameForIpAddressAndUserAgent, ::adminReleaseIpAddress
+	bug solved: $dateTime was still formatted as date without time
+- RequestCountsRepository::updateColumnWhereColumnNullAfterSupplied now expects $value to be a DateTime object
+- UserChecker removed
+--------------------
+(several documentation improves, improved default settings)
+---------
+Issue #1:
+Create indexes in the database, add the Data definition SQL to the
+install documentation
+---------
+(several attempts to improve documentation layout)
+----------------------
+Issue #2 Make unit tests run also from the command line:
+- Tests/Service/TresholdsGovernorTest::setUp added initialization for !isSet($kernel)
+- Resources/doc/Installation.md added instructions for adding testsuite to app/phpunit.xml
+----------------------
+Issue #8 limit dependencies from Doctrine to DBAL
+- added default 0 for counters to Data Definition
+- RequestCountsRepository::createWith now performs INSERT query instead of returning an Entity
+- TresholdsGovernor now uses RequestCountsRepository instead of the entity
+	::registerAuthenticationSuccess, registerAuthenticationFaulure now just call RequestCountsRepository::createWith to insert
+	::__construct now instatiates RequestCountsRepository
+- RequestCountsRepository no longer extends EntityRepository
+- Entity\RequestCounts removed
+----------------------
+Issue #8 limit dependencies from Doctrine to DBAL
+- RequestCountsRepository::__construct now expects a Doctrine\DBAL\Connection
+	::getConnection added
+	replaced $this->getEntityManger()->getConnection() by $this->getConnection()
+- TresholdsGovernor now uses Doctrine\DBAL\Connection instead of EntityManager
+	__construct now expects and stores Connection
+- services.yml replaced service metaclass_auth_guard.entity_manager_login by metaclass_auth_guard.connection_login
+- Configuration::getConfigTreeBuilder now defines db_connection instead of entity_manager_login
+- MetaclassAuthenticationGuardExtension::load now sets parameter metaclass_auth_guard.db_connection.name instead of entity_manager_login.name
+- security.yml now:
+    metaclass_authentication_guard:
+        db_connection:
+            name: login
+- composer.json replaced dependency "doctrine/orm": ">=2.2.3,<2.4-dev", by "doctrine/dbal": "2.3.*",
+! "doctrine/doctrine-bundle" has require-dev  "doctrine/orm"
+- doc/Installation.md now documents db_connection setting
+----------------
+	Data Definition now includes defaults for counters
+--------------
+Issue #3 Remove user agent from RequestCounts
+- Data Definition rename 'userReleasedForAddressAndAgentAt' by 'userReleasedForAddressAndCookieAt'
+		replace column 'agent' by 'cookieToken' varchar 40
+		long enough to hold bin2hex($this->secureRandom->nextBytes(20)); //CsrfProvider uses SHA1 , is 20 bytes
+- RequestCountsRepository replaced agent by cookieToken
+	::isUserReleasedForAgentFrom renamed to ::isUserReleasedByCookieFrom
+	::getIdWhereDateAndUsernameAndIpAddressAndAgent renamed to ::getIdWhereDateAndUsernameAndIpAddressAndCookie 
+	::qbWhereDateAndUsernameAndIpAddressAndAgent renamed to qbWhereDateAndUsernameAndIpAddressAndCookie
+	::findByDateAndUsernameAndIpAddressAndAgent removed
+- TresholdsGovernor now uses UsernameBlockedForCookieException
+	>>isUserReleasedOnAgent renamed to >>isUserReleasedByCookie, default false
+	>>failureCountForUserOnAgent renamed to >>failureCountForUserByCookie
+	>>allowReleasedUserOnAgentFor renamed to >>allowReleasedUserByCookieFor
+	>>distinctiveAgentMinLength removed
+	::isAgentDistinctive removed
+	::releaseUserNameForIpAddressAndUserAgent renamed to ::
+	column 'userReleasedForAddressAndAgentAt' replaced by 'userReleasedForAddressAndCookieAt'
+	call to :getIdWhereDateAndUsernameAndIpAddressAndAgent replaced by ::getIdWhereDateAndUsernameAndIpAddressAndCookie 
+	>>isUserReleasedOnAddress default false
+	::initFor no longer derives isUserReleasedByCookie if not allowReleasedUserByCookieFor
+		no longer derives isUserReleasedOnAddress if not allowReleasedUserOnAddressFor
+- UsernameBlockedForAgentException renamed to UsernameBlockedForCookieException
+- UsernamePasswordFormAuthenticationGuard::attemptAuthentication 
+	no longer passes user agent, passes empty string because setting and getting cookies not yet implemented
+- Configuration::getConfigTreeBuilder removed allowReleasedUserOnAgentFor, distinctiveAgentMinLength
+- TresholdsGovernorTest removed distinctiveAgentMinLength setting
+	replaced renameed TresholdsGovernor properties and the renamed Exception
+	::testCheckAuthenticationWithUserReleasedOnIpAddressAndAgent renamed to ::testCheckAuthenticationWithUserReleasedOnIpAddressAndCookie
+	::testCheckAuthenticationWithUserReleasedOnIpAddressAndCookie removed section for  $this->governer->distinctiveAgentMinLength = 7;
+	::testBlockingDurations because no check for cookieToken min length now expecting:
+		failureCountForUserName = 6 ; 5 seconds less then 10 days: 2
+		failureCountForUserByCookie = 2 ;  5 seconds less then 10 days: 1
+	::testReleaseDurations because no check for cookieToken min length now expecting:
+		failureCountForUserByCookie = 2
+- doc/Installation.md removed allowReleasedUserOnAgentFor and distinctiveAgentMinLength
+- doc/Counting and deciding.md adapted to the release by user agent being replaced by release by cookie token and not being used
+- Readme.md changed requirement with respect to doctrine, 
+	removed release note  with respect to unit tests not running from the command line
+---------------------
+Issue #9 cross framework library refactoring
+- Moved TresholdsGovernor, RequestCountsRepository to metaclass-nl/tresholds-governor repository
+- UsernamePasswordFormAuthenticationGuard now uses Metaclass\TresholdsGovernor\Service\TresholdsGovernor
+	::attemptAuthentication now expects TresholdsGovernor::checkAuthentication to return null 
+		or a Metaclass\TresholdsGovernor\Result\Rejection and throws corresponding exception 
+- Tests\Service\TresholdsGovernorTest moved actual tests to metaclass-nl/tresholds-governor repository,
+	added delegations to Metaclass\TresholdsGovernor\Tests\Service\TresholdsGovernorTest
+-  Resources/config/services.yml adapted
+- composer.json adapted
+- documentation adapted
+	
