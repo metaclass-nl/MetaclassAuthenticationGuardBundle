@@ -159,3 +159,5 @@ Issue #9 cross framework library refactoring
 - documentation adapted
 -------------------------
 - Readme.md and Resource/doc/Installation.md added metaclass-nl/tresholds-governor
+---------------------
+- corrected default settings
