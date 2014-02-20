@@ -29,6 +29,7 @@ REQUIREMENTS
 This bundle is for the symfony framework and requires Symfony ~2.3 and PHP >=5.3.3
 Uses Doctrine >=2.2.3 (actually only dbal is used, but doctrine/doctrine-bundle is still required) 
 and was tested with MySQL 5.5.
+Requires metaclass-nl/tresholds-governor *@dev
 
 RELEASE NOTES
 -------------

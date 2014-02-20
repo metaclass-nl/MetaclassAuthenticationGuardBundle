@@ -157,4 +157,5 @@ Issue #9 cross framework library refactoring
 -  Resources/config/services.yml adapted
 - composer.json adapted
 - documentation adapted
-	
+-------------------------
+- Readme.md and Resource/doc/Installation.md added metaclass-nl/tresholds-governor

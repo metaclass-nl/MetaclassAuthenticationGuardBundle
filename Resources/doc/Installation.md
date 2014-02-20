@@ -26,11 +26,12 @@ Installation
 	(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
 	and you will have to write your own configuration to use instead of the one under step 4.
 
-2. Require the bundle in your composer.json
+2. Require the bundle and the tresholds governor library it needs in your composer.json
 	```js
 	{
 	    "require": {
-	        "metaclass-nl/authentication-guard-bundle": "*@dev"
+	        "metaclass-nl/authentication-guard-bundle": "*@dev",
+	        "metaclass-nl/tresholds-governor":  "*@dev"
 	    }
 	}
 	```
@@ -38,9 +39,10 @@ Installation
 
 	``` bash
 	$ php composer.phar update metaclass-nl/authentication-guard-bundle
+	$ php composer.phar update "metaclass-nl/tresholds-governor
 	```
 
-	Composer will install the bundle to your `vendor/metaclass-nl` folder.
+	Composer will install the bundle and library in your `vendor/metaclass-nl` folder.
 
 4. Create the database table
 
