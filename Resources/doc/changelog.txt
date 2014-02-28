@@ -161,3 +161,7 @@ Issue #9 cross framework library refactoring
 - Readme.md and Resource/doc/Installation.md added metaclass-nl/tresholds-governor
 ---------------------
 - corrected default settings
+-------------------------------
+Issue #6 Add a separate last releases table so that RequestCounts records do not need to be kept for much longer treshold 'allowReleasedUserOnAddressFor' .
+- Resources/config/services.yml now creates DbalGateway and passes it to tresholdsGoverner according to modified constructor parameters 
+- Tests\Service\TresholdsGovernorTest renamed testDelete methods and delegations

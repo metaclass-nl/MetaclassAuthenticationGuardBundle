@@ -1,5 +1,5 @@
 parameters:
-    metaclass_auth_guard.manager_requestcounts.class: "Metaclass\TresholdsGovernor\Manager\RdbManager"
+    metaclass_auth_guard.gateway.class: "Metaclass\TresholdsGovernor\Gateway\DbalGateway"
     metaclass_auth_guard.tresholds_governor.class: "Metaclass\TresholdsGovernor\Service\TresholdsGovernor"
     metaclass_auth_guard.authentication.listener.form.class: Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard
 
@@ -13,10 +13,10 @@ services:
         public: false
         arguments: [%metaclass_auth_guard.db_connection.name%] 
 
+    metaclass_auth_guard.gateway:
+        class: %metaclass_auth_guard.gateway.class%
+        arguments: ["@metaclass_auth_guard.connection_login"]
+
     metaclass_auth_guard.tresholds_governor:
         class: %metaclass_auth_guard.tresholds_governor.class%
-        arguments: ["@metaclass_auth_guard.connection_login", %metaclass_auth_guard.manager_requestcounts.class%, %metaclass_auth_guard.tresholds_governor_params%]
-
-
-
-
+        arguments: [%metaclass_auth_guard.tresholds_governor_params%, "@metaclass_auth_guard.gateway"]

@@ -78,9 +78,9 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->delegate->testReleaseDurations();
     }
     
-    function testDeleteCounts1() 
+    function testDeleteData1() 
     {
-        $this->delegate->testDeleteCounts1();
+        $this->delegate->testDeleteData1();
     }
 
     function testRegisterAuthenticationSuccessReleasingUser() 
@@ -93,9 +93,9 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->delegate->testCheckAuthenticationWithUserReleased();
     }
         
-    function testDeleteCounts2() 
+    function testDeleteData2() 
     {
-        $this->delegate->testDeleteCounts2();
+        $this->delegate->testDeleteData2();
     }
     
 }
