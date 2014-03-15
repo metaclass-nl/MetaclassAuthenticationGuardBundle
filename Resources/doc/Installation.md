@@ -35,7 +35,7 @@ Installation
 	    }
 	}
 	```
-3. download the bundle by:
+3. download the bundles by:
 
 	``` bash
 	$ php composer.phar update metaclass-nl/authentication-guard-bundle
@@ -46,29 +46,7 @@ Installation
 
 4. Create the database table
 
-	```sql
-CREATE TABLE `secu_requests` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dtFrom` datetime NOT NULL,
-  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `ipAddress` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `cookieToken` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  `loginsFailed` int(11) NOT NULL DEFAULT '0',
-  `loginsSucceeded` int(11) NOT NULL DEFAULT '0',
-  `requestsAuthorized` int(11) NOT NULL DEFAULT '0',
-  `requestsDenied` int(11) NOT NULL DEFAULT '0',
-  `userReleasedAt` datetime DEFAULT NULL,
-  `addresReleasedAt` datetime DEFAULT NULL,
-  `userReleasedForAddressAndCookieAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `byDtFrom` (`dtFrom`),
-  KEY `byUsername` (`username`,`dtFrom`,`userReleasedAt`),
-  KEY `byAddress` (`ipAddress`,`dtFrom`,`addresReleasedAt`),
-  KEY `byUsernameAndAddress` (`username`,`ipAddress`,`dtFrom`,`userReleasedForAddressAndAgentAt`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-	```
-	(you may use MyISAM, but processing multiple requests simultanously may result in some (non-fatal) counting race conditions during brute force attacks)
-	(you may use some other DBMS that is supported by Doctrine DBAL)
+	See step 3 of the [Install documentation of the tresholds-governor]((https://github.com/metaclass-nl/tresholds-governor/doc/Installation.md)
 
 5. Add the bundle to your AppKernel
 

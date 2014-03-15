@@ -165,3 +165,7 @@ Issue #9 cross framework library refactoring
 Issue #6 Add a separate last releases table so that RequestCounts records do not need to be kept for much longer treshold 'allowReleasedUserOnAddressFor' .
 - Resources/config/services.yml now creates DbalGateway and passes it to tresholdsGoverner according to modified constructor parameters 
 - Tests\Service\TresholdsGovernorTest renamed testDelete methods and delegations
+------------------------------------
+Issue #6 Add a function for clean-up of the RequestCounts 
+- TresholdsGovernorTest::testPackData added
+- Resources/doc/Installation.md step 4 now refers to tresholdsgovernor library documentation

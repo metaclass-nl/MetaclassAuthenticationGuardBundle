@@ -97,6 +97,10 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     {
         $this->delegate->testDeleteData2();
     }
-    
+
+    function testPackData()
+    {
+        $this->delegate->testPackData();
+    }
 }
 ?>
