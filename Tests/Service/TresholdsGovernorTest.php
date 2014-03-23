@@ -77,7 +77,7 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     {
         $this->delegate->testReleaseDurations();
     }
-    
+ 
     function testDeleteData1() 
     {
         $this->delegate->testDeleteData1();
@@ -102,5 +102,6 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     {
         $this->delegate->testPackData();
     }
+
 }
 ?>

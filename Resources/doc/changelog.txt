@@ -169,3 +169,8 @@ Issue #6 Add a separate last releases table so that RequestCounts records do not
 Issue #6 Add a function for clean-up of the RequestCounts 
 - TresholdsGovernorTest::testPackData added
 - Resources/doc/Installation.md step 4 now refers to tresholdsgovernor library documentation
+-----------------------------------
+Issue #7  facilitate custom NoSQL storage 
+- services.yml added metaclass_auth_guard.manager.class: "Metaclass\TresholdsGovernor\Manager\RdbManager"
+	added metaclass_auth_guard.manager service
+	metaclass_auth_guard.tresholds_governor now uses metaclass_auth_guard.manager
