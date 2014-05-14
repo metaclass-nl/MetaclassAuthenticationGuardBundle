@@ -46,7 +46,7 @@ Installation
 
 4. Create the database table
 
-	See step 3 of the [Install documentation of the tresholds-governor]((https://github.com/metaclass-nl/tresholds-governor/doc/Installation.md)
+	See step 3 of the Install documentation of the [tresholds-governor]((https://github.com/metaclass-nl/tresholds-governor/)
 
 5. Add the bundle to your AppKernel
 
@@ -91,7 +91,20 @@ metaclass_authentication_guard:
         allowReleasedUserOnAddressFor: "30 days" 
 ```
 
-8. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
+8. From cron or so you may garbage-collect/pack stored RequestCounts:
+	```php
+    require_once 'app/AppKernel.php';
+
+    $kernel = new AppKernel('prod', false);
+    $kernel->loadClassCache();
+    $kernel->boot();
+    $container = $kernel->getContainer();
+
+    $governor = $container->get('metaclass_auth_guard.tresholds_governor');
+    $governor->packData();
+```
+
+9. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml
         <testsuite name="MetaclassAUthenticationGuardBundle Test Suite">
             <directory>../vendor/metaclass-nl/authentication-guard-bundle/Metaclass/AuthenticationGuardBundle/Tests</directory>

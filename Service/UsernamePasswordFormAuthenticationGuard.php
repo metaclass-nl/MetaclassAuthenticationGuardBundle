@@ -33,8 +33,8 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     protected $mySecurityContext;
     
     protected $governor;
-    protected $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF
-    protected $passwordPattern; //if not set, usernamePattern is used
+    static $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF
+    static $passwordPattern; //if not set, usernamePattern is used
     
     /**
      * {@inheritdoc}
@@ -162,10 +162,10 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     }
     
     /** Filter the credentials to protect against invalid UTF-8 characters */
-    protected function filterCredentials($usernameAndPassword) {
+    public static function filterCredentials($usernameAndPassword) {
         return array(
-            preg_replace($this->usernamePattern, ' ', $usernameAndPassword[0]), 
-            preg_replace( ($this->passwordPattern === null ? $this->usernamePattern : $this->passwordPattern), ' ', $usernameAndPassword[1]),
+            preg_replace(self::$usernamePattern, ' ', $usernameAndPassword[0]), 
+            preg_replace( (self::$passwordPattern === null ? self::$usernamePattern : self::$passwordPattern), ' ', $usernameAndPassword[1]),
         );
     }
     

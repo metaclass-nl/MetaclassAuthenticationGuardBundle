@@ -174,3 +174,8 @@ Issue #7  facilitate custom NoSQL storage
 - services.yml added metaclass_auth_guard.manager.class: "Metaclass\TresholdsGovernor\Manager\RdbManager"
 	added metaclass_auth_guard.manager service
 	metaclass_auth_guard.tresholds_governor now uses metaclass_auth_guard.manager
+---------------------------------------
+Issue #9 cross framework library refactoring
+- corrected in-bundle documentation
+AuthenticationGuardBundle Issue #6 Add a function for clean-up of the RequestCounts
+- Installation.md added how to call the function from Cron or so

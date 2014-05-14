@@ -45,13 +45,11 @@ for frequently and infrequently used usernames,
 Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the 
 login form to hyde differences between them that should not be reported to users.
 
-Does not garbage-collect nor pack stored RequestCounts. 
-
 DOCUMENTATION
 -------------
 - [Installation and configuration](Resources/doc/Installation.md)
 - [Hooking into Symfony](Resources/doc/Hooking into Symfony.md)
-- [Counting and deciding](https://github.com/metaclass-nl/tresholds-governor/doc/Counting and deciding.md)
+- [Underlying Tresholds Governor library](https://github.com/metaclass-nl/tresholds-governor)
 	
 SUPPORT
 -------
