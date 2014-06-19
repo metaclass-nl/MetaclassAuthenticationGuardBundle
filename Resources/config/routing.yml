@@ -1,1 +1,5 @@
 
+# werkt niet met verplaatste bundle, subclass maken in UserBundle
+#RequestCounts:
+#    path:      /guard/show/{username}
+#    defaults:  { _controller: AuthenticationGuardBundle:RequestCounts:show }

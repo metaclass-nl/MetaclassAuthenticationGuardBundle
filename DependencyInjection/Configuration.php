@@ -36,6 +36,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('limitBasePerIpAddress')->defaultValue(10)->end()
                         ->scalarNode('allowReleasedUserOnAddressFor')->defaultValue('30 days')->end()
                         ->scalarNode('releaseUserOnLoginSuccess')->defaultValue(false)->end()
+                        ->scalarNode('keepCountsFor')->defaultValue('4 days')->end()
                     ->end()
                 ->end()
             ->end();

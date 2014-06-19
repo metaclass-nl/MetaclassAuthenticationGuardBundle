@@ -106,8 +106,8 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
 
     function checkAuthenticationJustFailed() 
     {
-        $this->governer->limitPerUserName = 2;
-        $this->governer->limitBasePerIpAddress = 2;
+        $this->governer->limitPerUserName = 3;
+        $this->governer->limitBasePerIpAddress = 3;
         $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertEquals(1, $this->get('failureCountForIpAddress'), 'failure count for ip address');
         $this->assertEquals(1, $this->get('failureCountForUserName'), 'failure count for username');
@@ -126,23 +126,23 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     function testCheckAuthenticationUnreleased() 
     {
         $this->governer->limitPerUserName = 3;
-        $this->governer->limitBasePerIpAddress = 1;
+        $this->governer->limitBasePerIpAddress = 2;
         $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertNull($this->governer->checkAuthentication()); 
 
-        $this->governer->limitBasePerIpAddress = 0;
+        $this->governer->limitBasePerIpAddress = 1;
         $result = $this->governer->checkAuthentication(); //registers authentication failure, but that only shows up when $this->governer->initFor
         $this->assertNotNull($result, 'result');
         $this->assertInstanceOf('Metaclass\TresholdsGovernor\Result\IpAddressBlocked', $result);
         $this->assertEquals("IP Adress '%ipAddress%' is blocked", $result->message);
         $this->assertEquals(array('%ipAddress%' => '192.168.255.255'), $result->parameters);
         
-        $this->governer->limitPerUserName = 1;
+        $this->governer->limitPerUserName = 2;
         $this->governer->limitBasePerIpAddress = 3;
         $this->assertNull($this->governer->checkAuthentication(), 'result'); 
         
         
-        $this->governer->limitPerUserName = 0;
+        $this->governer->limitPerUserName = 1;
         $result = $this->governer->checkAuthentication(); //registers authentication failure, but that only shows up when $this->governer->initFor
         $this->assertNotNull($result, 'result');
         $this->assertInstanceOf('Metaclass\TresholdsGovernor\Result\UsernameBlocked', $result);
@@ -230,26 +230,26 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
     {
         $this->governer->dtString = '1980-07-01 00:05:00'; //5 minutes later
         
-        $this->governer->limitPerUserName = 1;
-        $this->governer->limitBasePerIpAddress = 4;
+        $this->governer->limitPerUserName = 2;
+        $this->governer->limitBasePerIpAddress = 5;
         $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken1');
         $this->assertNull($this->governer->checkAuthentication());
     
-        $this->governer->limitBasePerIpAddress = 3;
+        $this->governer->limitBasePerIpAddress = 4;
         $this->assertNull($this->governer->checkAuthentication());
     
         $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken1');
-        $this->assertNull($this->governer->checkAuthentication()); //assert no Recection because of cookieToken released
+        $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection because of cookieToken released
     
         $this->governer->initFor('192.168.255.255', 'testuser1', 'whattheheck', 'cookieToken2');
-        $this->assertNull($this->governer->checkAuthentication()); //assert no Recection because of ip address released
+        $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection because of ip address released
     
-        $this->governer->limitPerUserName = 4;
+        $this->governer->limitPerUserName = 5;
         $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
-        $this->assertNull($this->governer->checkAuthentication()); //assert no Recection on other ip address
+        $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection on other ip address
     
-        $this->governer->limitBasePerIpAddress = 3;
-        $this->governer->limitPerUserName = 1;
+        $this->governer->limitBasePerIpAddress = 4;
+        $this->governer->limitPerUserName = 2;
         $this->governer->initFor('192.168.255.255', 'testuser2', 'whattheheck', 'cookieToken1');
         $result = $this->governer->checkAuthentication(); //registers authentication failure for testuser2
         $this->assertNotNull($result, 'result');
@@ -277,7 +277,7 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->assertEquals("Username '%username%' is blocked for cookie '%cookieToken%'", $result->message);
         $this->assertEquals(array('%username%' => 'testuser1', '%cookieToken%' => 'cookieToken1'), $result->parameters);
         
-        $this->governer->limitPerUserName = 1;
+        $this->governer->limitPerUserName = 2;
         $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection because of cookieToken released
         
     }
@@ -431,7 +431,7 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
         $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection because of ip address released
         
         $this->governer->limitBasePerIpAddress = 1;
-        $this->governer->limitPerUserName = 0;
+        $this->governer->limitPerUserName = 1;
         $this->governer->initFor('192.168.255.254', 'testuser1', 'whattheheck', 'cookieToken2');
         $this->assertNull($this->governer->checkAuthentication()); //assert no Rejection because user released
         

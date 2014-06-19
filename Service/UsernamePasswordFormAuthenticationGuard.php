@@ -59,9 +59,9 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     }
     
     public function setValidationPatterns($usernamePattern, $passwordPattern=null) {
-        $this->usernamePattern = $usernamePattern;
+        self::$usernamePattern = $usernamePattern;
         if ($passwordPattern !== null) {
-            $this->passwordPattern = $passwordPattern;
+            self::$passwordPattern = $passwordPattern;
         }
     }
     
@@ -164,9 +164,19 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     /** Filter the credentials to protect against invalid UTF-8 characters */
     public static function filterCredentials($usernameAndPassword) {
         return array(
-            preg_replace(self::$usernamePattern, ' ', $usernameAndPassword[0]), 
-            preg_replace( (self::$passwordPattern === null ? self::$usernamePattern : self::$passwordPattern), ' ', $usernameAndPassword[1]),
+            self::filterUsername($usernameAndPassword[0]),
+            self::filterPassword($usernameAndPassword[1])
         );
+    }
+
+    public static function filterUsername($value)
+    {
+        return preg_replace(self::$usernamePattern, ' ', $value);
+    }
+
+    public static function filterPassword($value)
+    {
+        return preg_replace( (self::$passwordPattern === null ? self::$usernamePattern : self::$passwordPattern), ' ', $value);
     }
     
     static public function isClientResponsibleFor(AuthenticationException $e) {

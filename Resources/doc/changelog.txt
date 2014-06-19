@@ -177,5 +177,17 @@ Issue #7  facilitate custom NoSQL storage
 ---------------------------------------
 Issue #9 cross framework library refactoring
 - corrected in-bundle documentation
-AuthenticationGuardBundle Issue #6 Add a function for clean-up of the RequestCounts
+Issue #6 Add a function for clean-up of the RequestCounts
 - Installation.md added how to call the function from Cron or so
+--------------------------------------------
+To support UserController
+- UsernamePasswordFormAuthenticationGuard::filterCredentials now public static
+- TresholdsGovernorTest adapted
+- UsernamePasswordFormAuthenticationGuard::filterCredentials factored out ::filterPassword
+To support locking history for administrator
+- Configuration added keepCountsFor
+- Form\Type\StatsPeriodType added
+To correct errorneous application of limits
+- TresholdsGovernorTest limits adapted
+comitted, not pushed
+----------------------------------------
