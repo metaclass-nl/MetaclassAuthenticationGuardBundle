@@ -3,3 +3,8 @@
 #RequestCounts:
 #    path:      /guard/show/{username}
 #    defaults:  { _controller: AuthenticationGuardBundle:RequestCounts:show }
+
+Guard:
+    resource: "@MetaclassAuthenticationGuardBundle/Controller/GuardStatsController.php"
+    type:     annotation
+    prefix:   /guard

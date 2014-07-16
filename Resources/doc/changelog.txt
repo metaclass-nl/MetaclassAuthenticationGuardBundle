@@ -191,3 +191,9 @@ To correct errorneous application of limits
 - TresholdsGovernorTest limits adapted
 comitted, not pushed
 ----------------------------------------
+- moved GuardStatsController and statistics.html.twig from MetaclassUserBundle
+- GuardStatsController>>dateTimeFormat now international format
+2DO:
+- dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
+    also editrow.html.twig (may use default)
+comitted, pushed
