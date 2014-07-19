@@ -28,7 +28,7 @@ class GuardStatsController extends Controller {
     public function __construct()
     {
         $this->dtTransformer = new DateTimeToLocalizedStringTransformer(
-            null, null, null, null, null, $this->dateTimeFormat);
+            null, null, null, null, \IntlDateFormatter::GREGORIAN, $this->dateTimeFormat);
     }
 
     /**
