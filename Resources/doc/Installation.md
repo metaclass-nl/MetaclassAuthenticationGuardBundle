@@ -89,7 +89,7 @@ metaclass_authentication_guard:
         limitBasePerIpAddress: 10
         releaseUserOnLoginSuccess: false
         allowReleasedUserOnAddressFor: "30 days" 
-```
+    ```
 
 8. From cron or so you may garbage-collect/pack stored RequestCounts:
 	```php
@@ -108,7 +108,7 @@ metaclass_authentication_guard:
     $secuLogger->info('tresholds_governor deleted requestcounts until '. $result["requestcounts_deleted_until"]->format('Y-m-d H:m:s') );
     $secuLogger->info('tresholds_governor deleted releases until '. $result["releases_deleted_until"]->format('Y-m-d H:m:s') );
 
-```
+    ```
 
 9. If you want enable the user interface for user administrators to look into why a user may have been blocked,
    add the following to your app/config/routing.yml:
