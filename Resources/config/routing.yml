@@ -1,9 +1,10 @@
-
-# werkt niet met verplaatste bundle, subclass maken in UserBundle
-#RequestCounts:
-#    path:      /guard/show/{username}
-#    defaults:  { _controller: AuthenticationGuardBundle:RequestCounts:show }
-
+# Web based wser interface for user administators to look into why a user may have been blocked
+#
+# WARNING: if you just add this yml as a resource to your routing.yml configuration,
+# you need to confige your access control to require authentication and administrative rights,
+# otherwise anybody will be able to see the user names, ip addresses, date, time and more
+# of all login attemtps!!!
+#
 Guard:
     resource: "@MetaclassAuthenticationGuardBundle/Controller/GuardStatsController.php"
     type:     annotation

@@ -22,7 +22,9 @@ FEATURES
 
 - Automatic release of username on authentication success,
 
-- Stores counters instead of individual requests to prevent database flooding from brute force attacks.
+- Stores counters instead of individual requests to prevent database flooding from brute force attacks,
+
+- Web based user interface for user administrators to look into why a user may have been blocked.
 
 REQUIREMENTS
 ------------

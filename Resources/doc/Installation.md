@@ -95,16 +95,43 @@ metaclass_authentication_guard:
 	```php
     require_once 'app/AppKernel.php';
 
-    $kernel = new AppKernel('prod', false);
+    $kernel = new AppKernel('prod', false); //for production environment. You may change 'prod' for other environments
     $kernel->loadClassCache();
     $kernel->boot();
     $container = $kernel->getContainer();
 
     $governor = $container->get('metaclass_auth_guard.tresholds_governor');
-    $governor->packData();
+    $result = $governor->packData();
+
+    //if you want to log the result:
+    $secuLogger = $container->get('monolog.logger.security');
+    $secuLogger->info('tresholds_governor deleted requestcounts until '. $result["requestcounts_deleted_until"]->format('Y-m-d H:m:s') );
+    $secuLogger->info('tresholds_governor deleted releases until '. $result["releases_deleted_until"]->format('Y-m-d H:m:s') );
+
 ```
 
-9. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
+9. If you want enable the user interface for user administrators to look into why a user may have been blocked,
+   add the following to your app/config/routing.yml:
+   	```yml
+   	metaclass_auth_guard:
+        resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
+        prefix:   /
+    ```
+    And add the path of the user interface to your firewall in app/conf/security.yml:
+    ```yml
+    access_control:
+        - { path: ^/guard, roles: ROLE_ADMIN }
+    ```
+    (there will probably already be an access_control configuration with several paths listed.
+    Just add the above path to the list. You may have to adapt ROLE_ADMIN to the user role identifier
+    appropriate for your application's security configuration.
+
+    The user interface has the following entries:
+    - guard/statistics
+    - guard/statistics/username
+    (replace 'username' by an actual username)
+
+10. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml
         <testsuite name="MetaclassAUthenticationGuardBundle Test Suite">
             <directory>../vendor/metaclass-nl/authentication-guard-bundle/Metaclass/AuthenticationGuardBundle/Tests</directory>
@@ -205,7 +232,25 @@ Configurations
 	do not come from his IP address. However, he may take a vacation and not log in for some weeks or so. 
 	This setting basically says how long this vacation may be and still be allowed to
 	log in because of his user agent.
-	
+
+9. Garbage collection delay
+
+    keepCountsFor
+
+    For how long the requestcounts will be kept before being garbage-collected. Values like "4 days".
+
+    If you have enabled the user interface for user administrators to look into why
+    a user may have been blocked, this is how long they can look back in time to see
+    what happened.
+
+    This value must allways be set longer then both blockUsernamesFor and blockIpAddressesFor,
+    otherwise counters will be deleted before blocking should end and no longer be counted in
+    for blocking.
+
+    Currently the user interface shows no information about active releases, but for
+    future extension this value also acts as a minimum for how long releases will be kept before being
+    garbage collected, but if allowReleasedUserOnAddressFor (or allowReleasedUserByCookieFor)
+    is set to a longer duration, the releases will be kept longer (according to the longest one).
 
 Notes
 

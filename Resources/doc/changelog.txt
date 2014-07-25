@@ -199,3 +199,11 @@ comitted, not pushed
 comitted, pushed
 -------------------
 - GuardStatsController::__construct now passes \IntlDateFormatter::GREGORIAN to DateTimeToLocalizedStringTransformer
+comitted, pushed
+------------------
+- config/routing.yml added remarks
+- README.md added user interface for user administrators to features list
+- doc/Installation.md documented configuration for user interface for user administrators
+    added keepCountsFor parameter to configurations
+
+-------------------
