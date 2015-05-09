@@ -202,8 +202,11 @@ comitted, pushed
 - README.md added user interface for user administrators to features list
 - doc/Installation.md documented configuration for user interface for user administrators
     added keepCountsFor parameter to configurations
-comitted, pushed
+committed, pushed
 -------------------
+- Added supports for fixed execution times to migitate possible timing attacks
+committed, pushed
+--------------------
 2DO:
 - dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
     also editrow.html.twig (may use default)

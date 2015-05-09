@@ -41,11 +41,15 @@ This is a pre-release version under development.
 Currently the Bundle can only protect form-based authentication using the security.authentication.listener.form service 
 (Default: Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener).
 
-May be vurnerable to user enumeration through timing attacks because of differences in database query performance 
-for frequently and infrequently used usernames,
-
-Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the 
+Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the
 login form to hyde differences between them that should not be reported to users.
+
+May be vurnerable to enumeration of usernames through timing attacks because of
+differences in database query performance for frequently and infrequently used usernames.
+This can be mitigated by calling ::sleepUntilFixedExecutionTime. Under normal circomstances
+that should be sufficient if the fixedExecutionSeconds is set long enough, but under
+high (database) server loads when performance degrades, under specific conditons
+information may still be extractable by timing.
 
 DOCUMENTATION
 -------------

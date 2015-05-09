@@ -33,7 +33,8 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     protected $mySecurityContext;
     
     protected $governor;
-    static $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF
+    public $authExecutionSeconds;
+    static $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF. If you want to be able to register e-mail addresses, don't exclude @
     static $passwordPattern; //if not set, usernamePattern is used
     
     /**
@@ -64,8 +65,17 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
             self::$passwordPattern = $passwordPattern;
         }
     }
-    
+
     /**
+     * In order to hide execution time differences when authentication is not blocked
+     * @var float How long execution of the authentication process should take
+     */
+    public function setAuthExecutionSeconds($seconds)
+    {
+        $this->authExecutionSeconds = $seconds;
+    }
+
+/**
      * {@inheritdoc}
      */
     protected function requiresAuthentication(Request $request)
@@ -82,6 +92,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
      */
     protected function attemptAuthentication(Request $request)
     {
+        $exception = null;
         $originalCred = $this->getCredentials($request);
         $filteredCred = $this->filterCredentials($originalCred);
         $request->getSession()->set(SecurityContextInterface::LAST_USERNAME, $originalCred[0]);
@@ -90,7 +101,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
             $this->checkCrsfToken($request);
         }
         
-        //initialize the governer so that we can register a failure
+        //initialize the governor so that we can register a failure
         $this->governor->initFor(
                  $request->getClientIp()
                 , $filteredCred[0]
@@ -100,42 +111,52 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         
         if ($originalCred != $filteredCred) { //we can not accept invalid characters
             $this->governor->registerAuthenticationFailure();
-            throw new BadCredentialsException('Credentials contain invalid character(s)');
-        }
-        
-        $this->throwExceptionOnRejection($this->governor->checkAuthentication()); //may register failure 
-        
-        //not blocked, try to authenticate
-        try {
-            $newToken = $this->authenticationManager->authenticate(new UsernamePasswordToken($filteredCred[0], $filteredCred[1], $this->providerKey));
-        } catch (AuthenticationException $e) {
-            if ($this->isClientResponsibleFor($e)) {
-                $this->governor->registerAuthenticationFailure();
-            } //else do not register service errors as failures
-            throw $e;
-        }
-        
-        //authenticated!
-        $this->governor->registerAuthenticationSuccess();
-        
-        //when the user goes to the login page without logging out or on reauthentication because of 
-        //an InsufficientAuthenticationException there may still be a UsernamePasswordToken 
-        $oldToken = $this->mySecurityContext->getToken();
-        $oldUserName = $oldToken instanceof UsernamePasswordToken ? $oldToken->getUserName() : '';
-        if ($newToken instanceof UsernamePasswordToken && trim($newToken->getUserName()) != trim($oldUserName)) {
-            //user has changed without logout, clear session so that the data of the old user can not leak to the new user
-            $request->getSession()->clear();
-        }
+            $exception = new BadCredentialsException('Credentials contain invalid character(s)');
+        } else {
+            $exception = $this->getExceptionOnRejection($this->governor->checkAuthentication()); //may register failure
+            if ($exception === null) {
+                //not blocked, try to authenticate
+                try {
+                    $newToken = $this->authenticationManager->authenticate(new UsernamePasswordToken($filteredCred[0], $filteredCred[1], $this->providerKey));
 
-        return $newToken;
+                    //authenticated! No need to hide timing
+                    $this->governor->registerAuthenticationSuccess();
+
+                    //when the user goes to the login page without logging out or on reauthentication because of
+                    //an InsufficientAuthenticationException there may still be a UsernamePasswordToken
+                    $oldToken = $this->mySecurityContext->getToken();
+                    $oldUserName = $oldToken instanceof UsernamePasswordToken ? $oldToken->getUserName() : '';
+                    if ($newToken instanceof UsernamePasswordToken && trim($newToken->getUserName()) != trim($oldUserName)) {
+                        //user has changed without logout, clear session so that the data of the old user can not leak to the new user
+                        $request->getSession()->clear();
+                    }
+
+                    return $newToken;
+               } catch (AuthenticationException $e) {
+                    if ($this->isClientResponsibleFor($e)) {
+                        $this->governor->registerAuthenticationFailure();
+                    } //else do not register service errors as failures
+                    // wait to hide eventual execution time differences
+                    if ($this->authExecutionSeconds) {
+                        // \Gen::show($this->governor->getSecondsPassedSinceInit()); die();
+                        $this->governor->sleepUntilSinceInit($this->authExecutionSeconds);
+                    }
+                    throw $e;
+               }
+           }
+        } // end $originalCred != $filteredCred
+
+        $this->governor->sleepUntilFixedExecutionTime(); // hides execution time differences of tresholds governor
+
+        throw $exception;
     }
     
-    protected function throwExceptionOnRejection($rejection)
+    protected function getExceptionOnRejection($rejection)
     {
         if ($rejection) {
             $exceptionClass = 'Metaclass\\AuthenticationGuardBundle\\Exception\\'
                 . subStr(get_class($rejection), 35). 'Exception';
-            throw new $exceptionClass(strtr($rejection->message, $rejection->parameters));
+            return new $exceptionClass(strtr($rejection->message, $rejection->parameters));
         }
     }
     

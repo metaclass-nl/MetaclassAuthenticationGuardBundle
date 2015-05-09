@@ -37,6 +37,8 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('allowReleasedUserOnAddressFor')->defaultValue('30 days')->end()
                         ->scalarNode('releaseUserOnLoginSuccess')->defaultValue(false)->end()
                         ->scalarNode('keepCountsFor')->defaultValue('4 days')->end()
+                        ->scalarNode('fixedExecutionSeconds')->defaultValue('0.1')->end()
+                        ->scalarNode('randomSleepingNanosecondsMax')->defaultValue('99999')->end()
                     ->end()
                 ->end()
             ->end();
