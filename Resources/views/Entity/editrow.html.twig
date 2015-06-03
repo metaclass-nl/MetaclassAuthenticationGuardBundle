@@ -7,8 +7,8 @@
                 <span class="required" title="Dit veld is verplicht">*</span>
             {% endif %}</div>
         <div class="form-inline formwidget">{{ form_widget(formrow) }}</div>
-        {% if formrow.vars.errors %}
-            <div class="form-inline form-error">{{ formrow.vars.errors.0.message }}</div>
+        {% if formrow.vars.errors.valid() %}
+            <div class="form-inline form-error">{{ formrow.vars.errors.current().message }}</div>
         {% endif %}
     </div>
 {% endif %}

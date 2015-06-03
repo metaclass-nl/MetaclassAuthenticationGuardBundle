@@ -210,6 +210,14 @@ committed, pushed
 - requires tresholds governor 0.2
 comitte, pushed
 ----------------------
+- composer dependencies removed from composer.json
+- requires tresholds governor >=0.2
+comitte, pushed
+----------------------
+- superficially adapted to symfony 2.6 (still uses depricated features)
+
+------------------------
+
 2DO:
 - dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
     also editrow.html.twig (may use default)

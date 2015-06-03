@@ -17,8 +17,9 @@ use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Security;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
@@ -30,7 +31,7 @@ use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
 class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationListener {
     
     protected $csrfProvider;
-    protected $mySecurityContext;
+    protected $myTokenStorage;
     
     protected $governor;
     public $authExecutionSeconds;
@@ -40,9 +41,9 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     /**
      * {@inheritdoc}
      */
-    public function __construct(SecurityContextInterface $securityContext, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfProviderInterface $csrfProvider = null)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfProviderInterface $csrfProvider = null)
     {
-        parent::__construct($securityContext, $authenticationManager, $sessionStrategy, $httpUtils, $providerKey, $successHandler, $failureHandler, array_merge(array(
+        parent::__construct($tokenStorage, $authenticationManager, $sessionStrategy, $httpUtils, $providerKey, $successHandler, $failureHandler, array_merge(array(
                 'username_parameter' => '_username',
                 'password_parameter' => '_password',
                 'csrf_parameter'     => '_csrf_token',
@@ -51,7 +52,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         ), $options), $logger, $dispatcher);
     
         $this->csrfProvider = $csrfProvider;
-        $this->mySecurityContext = $securityContext;
+        $this->myTokenStorage = $tokenStorage;
     }
     
     public function setGovenor(TresholdsGovernor $governor) {
@@ -95,7 +96,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         $exception = null;
         $originalCred = $this->getCredentials($request);
         $filteredCred = $this->filterCredentials($originalCred);
-        $request->getSession()->set(SecurityContextInterface::LAST_USERNAME, $originalCred[0]);
+        $request->getSession()->set(Security::LAST_USERNAME, $originalCred[0]);
         
         if (null !== $this->csrfProvider) {
             $this->checkCrsfToken($request);
@@ -124,7 +125,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
 
                     //when the user goes to the login page without logging out or on reauthentication because of
                     //an InsufficientAuthenticationException there may still be a UsernamePasswordToken
-                    $oldToken = $this->mySecurityContext->getToken();
+                    $oldToken = $this->myTokenStorage->getToken();
                     $oldUserName = $oldToken instanceof UsernamePasswordToken ? $oldToken->getUserName() : '';
                     if ($newToken instanceof UsernamePasswordToken && trim($newToken->getUserName()) != trim($oldUserName)) {
                         //user has changed without logout, clear session so that the data of the old user can not leak to the new user
