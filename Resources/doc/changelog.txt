@@ -207,6 +207,9 @@ committed, pushed
 - Added supports for fixed execution times to migitate possible timing attacks
 committed, pushed
 --------------------
+- requires tresholds governor 0.2
+comitte, pushed
+----------------------
 2DO:
 - dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
     also editrow.html.twig (may use default)
