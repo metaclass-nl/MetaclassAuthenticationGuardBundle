@@ -208,14 +208,14 @@ committed, pushed
 committed, pushed
 --------------------
 - requires tresholds governor 0.2
-comitte, pushed
+comitted, pushed
 ----------------------
 - composer dependencies removed from composer.json
 - requires tresholds governor >=0.2
-comitte, pushed
+comitted, pushed
 ----------------------
 - superficially adapted to symfony 2.6 (still uses depricated features)
-
+comitted, pushed
 ------------------------
 
 2DO:
