@@ -90,9 +90,10 @@ class GuardStatsController extends Controller {
 
         $limits = $this->addStatsPeriodForm($params, $governor, 'Historie');
 
-        $history = $governor->requestCountsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
-        $this->addHistoryTableParams($params, $history, 'username', 'Naam');
-
+        if (isSet($limits['From'])) {
+            $history = $governor->requestCountsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
+            $this->addHistoryTableParams($params, $history, 'username', 'Naam');
+        }
         return $params;
     }
         /**

@@ -217,7 +217,10 @@ comitted, pushed
 - superficially adapted to symfony 2.6 (still uses depricated features)
 comitted, pushed
 ------------------------
-
+Invalid form caused ContextErrorException: Notice: Undefined index: From
+- Controller\GuardStatsController::historyAction checks limits to exist
+committed, pushed
+------------------------
 2DO:
 - dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
     also editrow.html.twig (may use default)
