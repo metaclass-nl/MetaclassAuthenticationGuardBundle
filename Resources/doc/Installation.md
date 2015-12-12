@@ -58,7 +58,7 @@ Installation
 	{
 	    $bundles = array(
 	        // ...
-	        new Metaclass\AuthenticationGuardBundle\MetaclassAuthenticationGuardBundle.php(),
+	        new Metaclass\AuthenticationGuardBundle\MetaclassAuthenticationGuardBundle(),
 	    );
 	}
 	```
@@ -76,23 +76,23 @@ Installation
                 - [setAuthExecutionSeconds, [0.99]] # voluntary
     ```
 
-7. You may also add the following configuraton parameters (defaults shown):
+7. You also need to add the following configuraton parameters (defaults shown):
 
 	```yml
-metaclass_authentication_guard:
-    db_connection:
-        name: ""
-    tresholds_governor_params:
-        counterDurationInSeconds:  300
-        blockUsernamesFor: "24 minutes"       # actual blocking for up to counterDurationInSeconds shorter!
-        limitPerUserName: 3
-        blockIpAddressesFor: "17 minutes"     # actual blocking for up to counterDurationInSeconds shorter!
-        limitBasePerIpAddress: 10
-        releaseUserOnLoginSuccess: false
-        allowReleasedUserOnAddressFor: "30 days"
-        keepCountsFor: "4 days"
-        fixedExecutionSeconds: "0.1"
-        randomSleepingNanosecondsMax: 99999
+    metaclass_authentication_guard:
+        db_connection:
+            name: "default"
+        tresholds_governor_params:
+            counterDurationInSeconds:  300
+            blockUsernamesFor: "24 minutes"       # actual blocking for up to counterDurationInSeconds shorter!
+            limitPerUserName: 3
+            blockIpAddressesFor: "17 minutes"     # actual blocking for up to counterDurationInSeconds shorter!
+            limitBasePerIpAddress: 10
+            releaseUserOnLoginSuccess: false
+            allowReleasedUserOnAddressFor: "30 days"
+            keepCountsFor: "4 days"
+            fixedExecutionSeconds: "0.1"
+            randomSleepingNanosecondsMax: 99999
     ```
 
 8. From cron or so you may garbage-collect/pack stored RequestCounts:
@@ -114,26 +114,7 @@ metaclass_authentication_guard:
 
     ```
 
-9. If you want enable the user interface for user administrators to look into why a user may have been blocked,
-   add the following to your app/config/routing.yml:
-   	```yml
-   	metaclass_auth_guard:
-        resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
-        prefix:   /
-    ```
-    And add the path of the user interface to your firewall in app/conf/security.yml:
-    ```yml
-    access_control:
-        - { path: ^/guard, roles: ROLE_ADMIN }
-    ```
-    (there will probably already be an access_control configuration with several paths listed.
-    Just add the above path to the list. You may have to adapt ROLE_ADMIN to the user role identifier
-    appropriate for your application's security configuration.
-
-    The user interface has the following entries:
-    - guard/statistics
-    - guard/statistics/username
-    (replace 'username' by an actual username)
+9. The user interface for user administrators to look into why a user may have been blocked is not yet working.
 
 10. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml

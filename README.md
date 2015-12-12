@@ -24,8 +24,6 @@ FEATURES
 
 - Stores counters instead of individual requests to prevent database flooding from brute force attacks,
 
-- Web based user interface for user administrators to look into why a user may have been blocked.
-
 REQUIREMENTS
 ------------
 This bundle is for the symfony framework and requires Symfony ~2.3 and PHP >=5.3.3

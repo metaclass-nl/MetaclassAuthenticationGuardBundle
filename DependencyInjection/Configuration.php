@@ -24,7 +24,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('db_connection')
                     ->children()
-                        ->scalarNode('name')->defaultValue('')->end()
+                        ->scalarNode('name')->defaultValue('default')->end()
                     ->end()                    
                 ->end()
                 ->arrayNode('tresholds_governor_params')

@@ -221,6 +221,32 @@ Invalid form caused ContextErrorException: Notice: Undefined index: From
 - Controller\GuardStatsController::historyAction checks limits to exist
 committed, pushed
 ------------------------
+Issue #16: Missing used MenuItem package/dependency
+- README.md
+    removed feature:
+        - Web based user interface for user administrators
+- Resources/doc/Installation.md
+    7. You may also add
+        changed to: You also need to add
+
+Debugging on clean install:
+- Resources/doc/Installation.md
+    7. You may also add
+        db_connection:
+                    name: "default"
+    5. Add the bundle to your AppKernel:
+        removed .php from class name
+- DependencyInjection\Configuration::getConfigTreeBuilder
+    db_connection name '' changed to 'default'
+
+---------------------------------------
+
 2DO:
+- solve problem wiht params if not defined:
+metaclass_authentication_guard:
+    db_connection:
+        name: ""
+    tresholds_governor_params:
+        counterDurationInSeconds:  300
 - dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
     also editrow.html.twig (may use default)
