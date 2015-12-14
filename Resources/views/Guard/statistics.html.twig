@@ -1,72 +1,11 @@
-{% extends "MetaclassCoreBundle::layout.html.twig" %}
+{# default template to make the statistics work out of the box on an standard
+  Symfony project install. In an actual application you typically use a template
+  of your own that extends your own layout and includes statistics_content.html.twig.
+  To change the template used override the paramter from Resources/config.services.yml
+  in your applications configuration.
+#}
+{% extends 'base.html.twig' %}
 
-{% block content %}
-<h1>{{ title }}</h1>
-{% if fieldSpec is defined %}
-    <div class="form-horizontal" id="GuardStats">
-        <fieldset class="editform-fieldset" for="GuardStats_show">
-            {% for label, field in fieldSpec %}
-                <div class="form-group" for="{{ field }}">
-                    <label for="GuardStats_{{ field }}">{{ label }}</label>
-                    <div class="form-value">
-                        {{ fieldValues[field] }}
-                    </div>
-                </div>
-            {% endfor %}
-        </fieldset>
-    </div>
-{% endif %}
-{% if form is defined %}
-    <form id="{{ form.vars.name }}" class="form-inline" role="form" action="{{ path(routes.this, action_params) }}" method="post" {{ form_enctype(form) }}>
-        <fieldset class="editform-fieldset" for="GuardStats_period">
-            <legend class="fieldset-legend">{{ form.vars.label }}</legend>
-                <div class="form-group">
-                    {% for eachError in form.vars.errors %}
-                        <div class="form-error">{{ eachError.message }}</div>
-                    {% endfor %}
-                </div>
-                {% for formrow in form.children %}
-                    {{ include("MetaclassAuthenticationGuardBundle:Entity:editrow.html.twig") }}
-                {% endfor %}
-
-                <input type="submit"  class="btn btn-default" value="Show"/>
-        </fieldset>
-    </form>
-{% endif %}
-{% if columnSpec is defined %}
-    <div class="table-responsive">
-        <table class="table table-statistics">
-            <thead>
-            <tr>
-                <th colspan="{{ blockedHeaderIndent }}">&nbsp;</th>
-                <th colspan="4">Aantal pogingen geblokkeerd op</th>
-            </tr>
-            <tr>
-                <th>&nbsp;</th>
-                {% for label, key in columnSpec %}
-                    <th>{{ label }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for entity in items %}
-                <tr>
-                    {% if (route_history is defined) %}
-                    <td title="{{ labels.edit }}" class="td-hover" style="width: 20px;" onClick="document.location.href='{{ path(route_history, {'ipAddress': entity.ipAddress, 'StatsPeriod[From]': limits.From, 'StatsPeriod[Until]': limits.Until }) }}';">
-                    {#	<a title="Bewerken" href="{{ path(route_history, {'id': entity.id}) }}"> #}
-                    <span class="glyphicon">&#xe105;</span> {# glyphicon-eye-open \e105 #}
-                {% else %}
-                    <td>&nbsp;
-                        {% endif %}
-                    </td>
-                    {% for label, key in columnSpec %}
-                        <td>{{ entity[key] }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{% endif %}
+{% block body %}
+  {{ include("MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig") }}
 {% endblock %}

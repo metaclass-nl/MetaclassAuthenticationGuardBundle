@@ -9,14 +9,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-use Metaclass\CoreBundle\Menu\MenuItem;
 use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard;
 use Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType;
 
 class GuardStatsController extends Controller {
 
-    protected $dateTimeFormat = "dd-MM-yyyy HH:mm:ss";
     protected $dtTransformer;
+
+    // #TODO: use translation, maybe use configuration of controller as a service?
+    protected $dateTimeFormat = "dd-MM-yyyy HH:mm:ss";
     protected $booleanLabels = array('Nee', 'Ja');
     protected $blockedLabels = array('OK', 'Geblokkeerd');
     protected $rejectionLabels = array(
@@ -33,14 +34,13 @@ class GuardStatsController extends Controller {
 
     /**
      * @Route("/statistics", name="Guard_statistics")
-     * @Template("MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig")
      */
     public function statisticsAction()
     {
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
 
         $params['routes']['this'] = 'Guard_statistics';
-        $params['labels'] = array('show' => 'Bekijken', 'edit' => 'Bewerken');
+        $params['labels'] = array('show' => 'Bekijken');
         $params['action_params'] = array();
 
         $this->addStatisticCommonParams($params, $governor);
@@ -62,12 +62,14 @@ class GuardStatsController extends Controller {
             $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
             $params['limits']['Until'] = $this->dtTransformer->transform($limits['Until']);
         }
-        return $params;
+        // #TODO: make params testable
+        return $this->render(
+            $this->container->getParameter('metaclass_auth_guard.statistics.template'),
+            $params);
     }
 
     /**
      * @Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
-     * @Template("MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig")
      */
     public function historyAction($ipAddress)
     {
@@ -76,7 +78,7 @@ class GuardStatsController extends Controller {
         $params['routes']['this'] = 'Guard_history';
         $params['action_params'] = array('ipAddress' => $ipAddress);
         $params['title'] = 'Inloghistorie';
-        $params['menu'] = $this->buildMenu('Guard_history');
+        $this->buildMenu($params, 'Guard_history');
         $params['fieldSpec'] = array(
             'IP Adres' => 'ipAddress',
             'Maximum per gebruikersnaam' => 'limitPerUserName',
@@ -93,12 +95,18 @@ class GuardStatsController extends Controller {
         if (isSet($limits['From'])) {
             $history = $governor->requestCountsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
             $this->addHistoryTableParams($params, $history, 'username', 'Naam');
+            $params['route_byUsername'] = 'Guard_statisticsByUserName';
+            $params['labels'] = array('show' => 'Bekijken');
+            $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
+            $params['limits']['Until'] = $this->dtTransformer->transform($limits['Until']);
         }
-        return $params;
+        // #TODO: make params testable
+        return $this->render(
+            $this->container->getParameter('metaclass_auth_guard.statistics.template'),
+            $params);
     }
         /**
      * @Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
-     * @Template("MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig")
      */
      public function statisticsByUserNameAction($username)
     {
@@ -129,15 +137,23 @@ class GuardStatsController extends Controller {
         $fieldValues['allowReleasedUserOnAddressFor'] = $this->translatePeriod($governor->allowReleasedUserOnAddressFor);
 
 
-        $limitFrom = $this->getRequest()->isMethod('POST')
+        $limitFrom = $this->getRequest()->isMethod('POST') || $this->getRequest()->get('StatsPeriod')
             ? null
-            : new \DateTime("$governor->dtString - $governor->blockIpAddressesFor");
+            : $countingSince;
         $limits = $this->addStatsPeriodForm($params, $governor, 'Historie', $limitFrom);
-
+        if (isSet($limits['From'])) {
+            $params['labels'] = array('show' => 'Bekijken');
+            $params['route_history'] = 'Guard_history';
+            $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
+            $params['limits']['Until'] = $this->dtTransformer->transform($limits['Until']);
+        }
         $history = $governor->requestCountsManager->countsByUsernameBetween($username, $limits['From'], $limits['Until']);
         $this->addHistoryTableParams($params, $history, 'ipAddress', 'Adres');
 
-        return $params;
+        // #TODO: make params testable
+        return $this->render(
+            $this->container->getParameter('metaclass_auth_guard.statistics.template'),
+            $params);
     }
 
     protected function addHistoryTableParams(&$params, $history, $col1Field, $col1Label)
@@ -164,9 +180,9 @@ class GuardStatsController extends Controller {
     {
         $limits['Until'] = new \DateTime();
         $labels = array('From' => 'Van', 'Until' => 'Tot');
-        $hitoryLimit = new \DateTime("$governor->dtString - $governor->keepCountsFor");
+        $historyLimit = new \DateTime("$governor->dtString - $governor->keepCountsFor");
         $form = $this->createForm(
-            new StatsPeriodType($labels, $hitoryLimit, $this->dateTimeFormat),
+            new StatsPeriodType($labels, $historyLimit, $this->dateTimeFormat),
             null,
             array('label' => $label, 'csrf_protection' => false,));
         if ($limitFrom === null) {
@@ -187,7 +203,7 @@ class GuardStatsController extends Controller {
     protected function addStatisticCommonParams(&$params, $governor)
     {
         $params['title'] = 'Inlogbeveiliging';
-        $params['menu'] = $this->buildMenu('Guard_show');
+        $this->buildMenu($params, 'Guard_show');
         $fieldSpec = array(
             'Telt sinds' => 'countingSince',
             'Blokkeeer gebruikersnamen voor' => 'blockUsernamesFor',
@@ -251,21 +267,9 @@ class GuardStatsController extends Controller {
     }
 
 
-    protected function buildMenu($currentRoute)
+    protected function buildMenu(&$params, $currentRoute)
     {
-        $user = $this->getUser();
-        $menu = new MenuItem($this->container);
-        forEach ($this->container->getParameter('kernel.bundles') as $bundleClass)
-        {
-            if (method_exists($bundleClass, 'buildMenu')) {
-                $bundleClass::buildMenu($menu, $user);
-            }
-        }
-        $toSelect = $menu->withRoute($currentRoute);
-        if ($toSelect) {
-            $toSelect->active();
-        }
-        return $menu;
+        // To be overridden by subclass
     }
 
 } 

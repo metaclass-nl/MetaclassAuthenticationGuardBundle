@@ -238,15 +238,28 @@ Debugging on clean install:
         removed .php from class name
 - DependencyInjection\Configuration::getConfigTreeBuilder
     db_connection name '' changed to 'default'
-
+committed, pushed
 ---------------------------------------
+Issue #16: Missing used MenuItem package/dependency
+- removed dependency StatisticsController of MetaclassCoreBundle MenuItem
+- statistics.html.twig
+    . factored out statistics_content.html.twig
+    . changed dependency of MetaclassCoreBundle::layout.html.twig to base.html.twig
+    . removed view icon specific to bootstrap layout
+    . added hyperlinks to history and byUsername
+- GuardStatsController actions now use template configuration parameter metaclass_auth_guard.statistics.template
+- services.yml now defines default for metaclass_auth_guard.statistics.template
+
 
 2DO:
-- solve problem wiht params if not defined:
+ArboSDW verbeteren:
+- normale hyperlinks onderscheiden, maar hyperlinks in menu grijs houden
+
+- tanslation
+
+- solve problem with params if not defined:
 metaclass_authentication_guard:
     db_connection:
         name: ""
     tresholds_governor_params:
         counterDurationInSeconds:  300
-- dependency statistics.html.twig van MetaclassCoreBundle::layout.html.twig configurable
-    also editrow.html.twig (may use default)
