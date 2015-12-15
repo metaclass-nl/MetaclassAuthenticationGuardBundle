@@ -114,7 +114,37 @@ Installation
 
     ```
 
-9. The user interface for user administrators to look into why a user may have been blocked is not yet working.
+9. The user interface for user administrators to look into why a user may have been blocked is experimental and its labels are still in Dutch.
+    If you want enable it, add the following to your app/config/routing.yml:
+    ```yml
+    	metaclass_auth_guard:
+            resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
+            prefix:   /
+    ```
+     And add the path of the user interface to your firewall in app/conf/security.yml:
+    ```yml
+        access_control:
+            - { path: ^/guard, roles: ROLE_ADMIN }
+    ```
+     (there will probably already be an access_control configuration with several paths listed.
+     Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
+     appropriate for your application's security configuration.
+
+     The user interface has the following entries:
+     - guard/statistics
+     - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
+     - guard/statistics/username (replace 'username' by an actual username)
+
+     The default template assumes you have base.html.twig still in app/Resources/views.
+     In an actual application you typically use a template of your own that extends your own layout
+     and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig .
+     To change the template used override the parameter metaclass_auth_guard.statistics.template
+     in your applications configuration.
+
+     If your layout requires more parameters you probably want to use your own subclass
+     of GuardStatsController. For this you may override the route(s) from Resources/config/routing.yml
+     in your applications routing.yml after the metaclass_auth_guard resource configuration
+     or replace the resource configuration entirely.
 
 10. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml

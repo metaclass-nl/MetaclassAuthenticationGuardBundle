@@ -26,10 +26,9 @@ FEATURES
 
 REQUIREMENTS
 ------------
-This bundle is for the symfony framework and requires Symfony ~2.3 and PHP >=5.3.3
-Uses Doctrine >=2.2.3 (actually only dbal is used, but doctrine/doctrine-bundle is still required) 
-and was tested with MySQL 5.5.
-Requires metaclass-nl/tresholds-governor *@dev
+This bundle is for the symfony framework and requires Symfony >=2.3 and <3.0 and PHP >=5.3.3
+Requires metaclass-nl/tresholds-governor 0.2@dev which uses Doctrine DBAL >=2.3
+Tested with MySQL 5.5.
 
 RELEASE NOTES
 -------------
@@ -40,14 +39,17 @@ Currently the Bundle can only protect form-based authentication using the securi
 (Default: Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener).
 
 Throws specific types of Exceptions for different situations (for logging purposes) and leaves it to the
-login form to hyde differences between them that should not be reported to users.
+login form to hide differences between them that should not be reported to users.
 
 May be vurnerable to enumeration of usernames through timing attacks because of
 differences in database query performance for frequently and infrequently used usernames.
 This can be mitigated by calling ::sleepUntilFixedExecutionTime. Under normal circomstances
 that should be sufficient if the fixedExecutionSeconds is set long enough, but under
-high (database) server loads when performance degrades, under specific conditons
-information may still be extractable by timing.
+high (database) server loads when performance degrades, under specific conditions
+information may still be extractable by timing. Furthermore, the measures against
+timing attacks where not tested for practical effectiveness.
+
+The web based administration user interface is experimental and requires doctrine/doctrine-bundle.
 
 DOCUMENTATION
 -------------
