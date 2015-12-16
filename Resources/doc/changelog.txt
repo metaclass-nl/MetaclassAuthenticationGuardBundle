@@ -251,10 +251,19 @@ Issue #16: Missing used MenuItem package/dependency
 - services.yml now defines default for metaclass_auth_guard.statistics.template
 committed, pushed
 ---------------------------------------------
+Various
 - Added .idea to .gitignore
 - Corrected README.md (Requirements, Release notes)
 - Installation.md Returned instructions with respect to the web based adminstration user interface
 - GuardStatsController::statisticsByUserNameAction checks limits to exist
+committed
+----------------------------------------------
+Symfony 2.3 compatibility
+- UsernamePasswordFormAuthenticationGuard again uses SecurityContextInterface
+- Resources/views/Entity/editrow.html.twig
+- composer.json now requires symfony >=2.3.8,<3.0-dev
+Various
+- Corrected README.md (Requirements)
 
 ------------------------------------------------
 2DO:

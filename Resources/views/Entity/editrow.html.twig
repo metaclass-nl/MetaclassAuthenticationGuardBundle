@@ -7,7 +7,9 @@
                 <span class="required" title="Dit veld is verplicht">*</span>
             {% endif %}</div>
         <div class="form-inline formwidget">{{ form_widget(formrow) }}</div>
-        {% if formrow.vars.errors.valid() %}
+        {% if (formrow.vars.errors.0 is defined) %} {# Symfony ~2.3 #}
+            <div class="form-inline form-error">{{ formrow.vars.errors.0.message }}</div>
+        {% elseif formrow.vars.errors.valid() is defined and formrow.vars.errors.valid() %}
             <div class="form-inline form-error">{{ formrow.vars.errors.current().message }}</div>
         {% endif %}
     </div>
