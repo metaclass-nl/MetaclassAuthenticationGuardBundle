@@ -208,7 +208,7 @@ committed, pushed
 committed, pushed
 --------------------
 - requires tresholds governor 0.2
-comitted, pushed
+comitted, pushed, tagged v0.3
 ----------------------
 - composer dependencies removed from composer.json
 - requires tresholds governor >=0.2
@@ -249,12 +249,14 @@ Issue #16: Missing used MenuItem package/dependency
     . added hyperlinks to history and byUsername
 - GuardStatsController actions now use template configuration parameter metaclass_auth_guard.statistics.template
 - services.yml now defines default for metaclass_auth_guard.statistics.template
-comitted, pushed
+committed, pushed
 ---------------------------------------------
 - Added .idea to .gitignore
 - Corrected README.md (Requirements, Release notes)
 - Installation.md Returned instructions with respect to the web based adminstration user interface
+- GuardStatsController::statisticsByUserNameAction checks limits to exist
 
+------------------------------------------------
 2DO:
 ArboSDW verbeteren:
 - normale hyperlinks onderscheiden, maar hyperlinks in menu grijs houden

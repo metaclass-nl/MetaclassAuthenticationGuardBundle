@@ -146,9 +146,9 @@ class GuardStatsController extends Controller {
             $params['route_history'] = 'Guard_history';
             $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
             $params['limits']['Until'] = $this->dtTransformer->transform($limits['Until']);
+            $history = $governor->requestCountsManager->countsByUsernameBetween($username, $limits['From'], $limits['Until']);
+            $this->addHistoryTableParams($params, $history, 'ipAddress', 'Adres');
         }
-        $history = $governor->requestCountsManager->countsByUsernameBetween($username, $limits['From'], $limits['Until']);
-        $this->addHistoryTableParams($params, $history, 'ipAddress', 'Adres');
 
         // #TODO: make params testable
         return $this->render(
