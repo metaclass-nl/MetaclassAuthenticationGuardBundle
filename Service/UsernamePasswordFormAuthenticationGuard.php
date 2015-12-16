@@ -17,8 +17,9 @@ use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Security;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
@@ -40,7 +41,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     /**
      * {@inheritdoc}
      */
-    public function __construct(SecurityContextInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfProviderInterface $csrfProvider = null)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, CsrfProviderInterface $csrfProvider = null)
     {
         parent::__construct($tokenStorage, $authenticationManager, $sessionStrategy, $httpUtils, $providerKey, $successHandler, $failureHandler, array_merge(array(
                 'username_parameter' => '_username',
@@ -95,7 +96,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         $exception = null;
         $originalCred = $this->getCredentials($request);
         $filteredCred = $this->filterCredentials($originalCred);
-        $request->getSession()->set(SecurityContextInterface::LAST_USERNAME, $originalCred[0]);
+        $request->getSession()->set(Security::LAST_USERNAME, $originalCred[0]);
         
         if (null !== $this->csrfProvider) {
             $this->checkCrsfToken($request);

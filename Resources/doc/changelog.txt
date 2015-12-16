@@ -264,8 +264,13 @@ Symfony 2.3 compatibility
 - composer.json now requires symfony >=2.3.8,<3.0-dev
 Various
 - Corrected README.md (Requirements)
-
+comitted, pushed
 ------------------------------------------------
+Revert to targeting Symfony 2.6-2.8
+- UsernamePasswordFormAuthenticationGuard
+- composer.json
+- Corrected README.md (Requirements)
+
 2DO:
 ArboSDW verbeteren:
 - normale hyperlinks onderscheiden, maar hyperlinks in menu grijs houden
