@@ -264,8 +264,14 @@ Symfony 2.3 compatibility
 - composer.json now requires symfony >=2.3.8,<3.0-dev
 Various
 - Corrected README.md (Requirements)
-
+comitted, pushed
+created branche 0_3
 ------------------------------------------------
+(branche 0_3)
+- Corrected README.md (Requirements)
+- composer.json now requires symfony >=2.3.8,<=2.6.*
+
+
 2DO:
 ArboSDW verbeteren:
 - normale hyperlinks onderscheiden, maar hyperlinks in menu grijs houden
