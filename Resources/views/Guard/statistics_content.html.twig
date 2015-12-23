@@ -4,7 +4,7 @@
     <fieldset class="editform-fieldset" for="GuardStats_show">
       {% for label, field in fieldSpec %}
         <div class="form-group" for="{{ field }}">
-          <label for="GuardStats_{{ field }}">{{ label }}</label>
+          <label for="GuardStats_{{ field }}">{{ label|trans({}, 'metaclass_auth_guard') }}</label>
           <div class="form-value">
             {{ fieldValues[field] }}
           </div>
@@ -16,7 +16,7 @@
 {% if form is defined %}
   <form id="{{ form.vars.name }}" class="form-inline" role="form" action="{{ path(routes.this, action_params) }}" method="post" {{ form_enctype(form) }}>
     <fieldset class="editform-fieldset" for="GuardStats_period">
-      <legend class="fieldset-legend">{{ form.vars.label }}</legend>
+      <legend class="fieldset-legend">{{ form.vars.label|trans({}, 'metaclass_auth_guard') }}</legend>
       <div class="form-group">
         {% for eachError in form.vars.errors %}
           <div class="form-error">{{ eachError.message }}</div>
@@ -26,7 +26,7 @@
         {{ include("MetaclassAuthenticationGuardBundle:Entity:editrow.html.twig") }}
       {% endfor %}
 
-      <input type="submit"  class="btn btn-default" value="Show"/>
+      <input type="submit"  class="btn btn-default" value="{{ 'StatsPeriod.submit'|trans({}, 'metaclass_auth_guard') }}"/>
     </fieldset>
   </form>
 {% endif %}
@@ -36,11 +36,11 @@
       <thead>
       <tr>
         <th colspan="{{ blockedHeaderIndent }}">&nbsp;</th>
-        <th colspan="4">Aantal pogingen geblokkeerd op</th>
+        <th colspan="4"> {{ 'secu_requests.blockedColumns'|trans({}, 'metaclass_auth_guard') }}</th>
       </tr>
       <tr>
         {% for label, key in columnSpec %}
-          <th>{{ label }}</th>
+          <th>{{ label|trans({}, 'metaclass_auth_guard') }}</th>
         {% endfor %}
       </tr>
       </thead>
@@ -49,10 +49,10 @@
         <tr>
           {% for label, key in columnSpec %}
             <td>{% if (key == 'ipAddress' and route_history is defined) %}
-              <a title="{{ labels.show }}" href="{{ path(route_history, {'ipAddress': entity.ipAddress, 'StatsPeriod[From]': limits.From, 'StatsPeriod[Until]': limits.Until }) }}">
+              <a title="{{ labels.show|trans({}, 'metaclass_auth_guard') }}" href="{{ path(route_history, {'ipAddress': entity.ipAddress, 'StatsPeriod[From]': limits.From, 'StatsPeriod[Until]': limits.Until }) }}">
                 {{ entity[key] }}</a>
               {% elseif (key == 'username' and route_byUsername is defined) %}
-                <a title="{{ labels.show }}" href="{{ path(route_byUsername, {'username': entity.username, 'StatsPeriod[From]': limits.From, 'StatsPeriod[Until]': limits.Until }) }}">
+                <a title="{{ labels.show|trans({}, 'metaclass_auth_guard') }}" href="{{ path(route_byUsername, {'username': entity.username, 'StatsPeriod[From]': limits.From, 'StatsPeriod[Until]': limits.Until }) }}">
                   {{ entity[key] }}</a>
               {% else %}
                 {{ entity[key] }}

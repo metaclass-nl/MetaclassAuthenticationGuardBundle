@@ -24,9 +24,12 @@ FEATURES
 
 - Stores counters instead of individual requests to prevent database flooding from brute force attacks,
 
+- Web based user interface for user administrators to look into why a user may have been blocked.
+
 REQUIREMENTS
 ------------
-This bundle is for the symfony framework and requires Symfony >=2.3 and <=2.6.*
+This is for the symfony framework and this version requires Symfony >=2.3 and <=2.6.*.
+Another version will support Symfony >=2.6.
 Requires metaclass-nl/tresholds-governor 0.2@dev which uses Doctrine DBAL >=2.3
 Tested with MySQL 5.5.
 
@@ -43,13 +46,16 @@ login form to hide differences between them that should not be reported to users
 
 May be vurnerable to enumeration of usernames through timing attacks because of
 differences in database query performance for frequently and infrequently used usernames.
-This can be mitigated by calling ::sleepUntilFixedExecutionTime. Under normal circomstances
+This is mitigated by sleeping until a fixed execution time is reached. Under normal circomstances
 that should be sufficient if the fixedExecutionSeconds is set long enough, but under
 high (database) server loads when performance degrades, under specific conditions
 information may still be extractable by timing. Furthermore, the measures against
 timing attacks where not tested for practical effectiveness.
 
-The web based administration user interface is experimental and requires doctrine/doctrine-bundle.
+The web based administration user interface is experimental, requires doctrine/doctrine-bundle
+and is currenly only in English and Dutch (Please clone me on Github and add your own language translation!).
+
+0.3.* versions are tested with Symfony 2.3 and 2.6.
 
 DOCUMENTATION
 -------------

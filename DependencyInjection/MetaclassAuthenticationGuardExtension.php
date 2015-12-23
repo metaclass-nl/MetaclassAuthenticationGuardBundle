@@ -22,6 +22,7 @@ class MetaclassAuthenticationGuardExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter('metaclass_auth_guard.db_connection.name', $config['db_connection']['name']);
+        $container->setParameter('metaclass_auth_guard.ui.dateTimeFormat', $config['ui']['dateTimeFormat']);
         $container->setParameter('metaclass_auth_guard.tresholds_governor_params', $config['tresholds_governor_params']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));

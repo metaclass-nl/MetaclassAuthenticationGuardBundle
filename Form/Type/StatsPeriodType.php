@@ -11,11 +11,12 @@ class StatsPeriodType extends AbstractType
 {
     protected $labels;
 
-    public function __construct($labels, \DateTime $min, $dateTimeFormat)
+    public function __construct($labels, \DateTime $min, $dateFormat, $formatPattern)
     {
         $this->labels = $labels;
         $this->min = $min;
-        $this->dateTimeFormat = $dateTimeFormat;
+        $this->dateFormat = $dateFormat;
+        $this->formatPattern = $formatPattern;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -27,14 +28,16 @@ class StatsPeriodType extends AbstractType
                 'label' => $this->labels['From'],
                 'required' => true,
                 'widget' => 'single_text',
-                'format' => $this->dateTimeFormat,
+                'date_format' => $this->dateFormat,
+                'format' => $this->formatPattern,
                 'constraints' => $constraints
             ));
         $builder->add('Until', 'datetime', array(
                 'label' => $this->labels['Until'],
                 'required' => false,
                 'widget' => 'single_text',
-                'format' => $this->dateTimeFormat,
+                'date_format' => $this->dateFormat,
+                'format' => $this->formatPattern,
                 'constraints' => $constraints
             ));
     }
