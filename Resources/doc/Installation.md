@@ -165,9 +165,10 @@ Configurations
 
 1. The database connection to use
 
+    ```yml
     db_connection:
         name: ""
-        
+    ```
 	The default for this setting is emtpy, resulting in the default doctrine dbal connection to be used. 
 	If you specify some specific value a specific connection will be used for storing and retieving RequestCounts data. 
 
@@ -290,9 +291,10 @@ Configurations
 
 12. Datetime format used by the web based user interface
 
+    ```yml
     ui:
         dateTimeFormat
-
+    ```
     \IntlDateFormatter pattern or datetype. If a dattype is set
     (FULL, LONG, MEDIUM or SHORT) (case independent) the corresponding
     dateformat is used and no pattern so that the formatting will depend
@@ -309,10 +311,11 @@ Configurations
 
 13. Template used by the web based user interface for user administrators
 
+    ```yml
     ui:
         statistics:
             template
-
+    ```
     Bundlename:views subfolder:template filename
 
     In an actual application you typically set this to a template of your own.

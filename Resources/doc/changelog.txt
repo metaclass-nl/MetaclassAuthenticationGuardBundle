@@ -332,4 +332,8 @@ committed, pushed
 ---------------------------------------------------------
 Adaptation to Symfony 2.8
 - Resources/config/services.yml escaped \ in quoted strings
+committed, pushed, published
+----------------------------------------------------------
+Layout
+- Resources/doc/Installation.md added ```yml markings
 
