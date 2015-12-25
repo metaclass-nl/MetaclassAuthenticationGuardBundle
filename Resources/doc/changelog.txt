@@ -301,6 +301,7 @@ Make web based user interface more extendable:
     ::initDateFormatAndPattern may be overridden for setting locale dependent (custom) patterns
 comitted, pushed, published, tagged v0.3.1
 ----------------------------------------------------
+(branche 0_3)
 #14: Make user interface independent of DoctrineBundle
 - Controller\GuardStatsController no longer uses annotations
 - Resources/config/routing.yml now defines each route individually
@@ -323,3 +324,14 @@ Make web based user interface more extendable:
         title added
     13. Template used by the web based user interface for user administrators
         added
+committed, pushed, published
+-------------------------------------------------
+(branche 0_3)
+- Corrected README.md (Release notes)
+committed
+-------------------------------------------
+(branche 0_3)
+Corrected documentation
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        removed 'experimental', added info on enabling translation

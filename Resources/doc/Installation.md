@@ -118,8 +118,8 @@ Installation
 
     ```
 
-9. The user interface for user administrators to look into why a user may have been blocked is experimental and its labels are still in Dutch.
-    If you want enable it, add the following to your app/config/routing.yml:
+9. The user interface for user administrators to look into why a user may have been blocked is optional.
+    To enable it add the following to your app/config/routing.yml:
     ```yml
     	metaclass_auth_guard:
             resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
@@ -134,6 +134,11 @@ Installation
      Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
      appropriate for your application's security configuration.
 
+     It needs translation enabled in your app/config/config.yml:
+    ```yml
+         framework:
+             translator:      { fallbacks: ["%locale%"] }
+    ```
      The user interface has the following entries:
      - guard/statistics
      - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
