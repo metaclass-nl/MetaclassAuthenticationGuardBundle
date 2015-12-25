@@ -321,5 +321,11 @@ Make web based user interface more extendable:
         title added
     13. Template used by the web based user interface for user administrators
         added
-
+comitted, pushed
+------------------------------------------------------
+(master)
+Corrected documentation
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        removed 'experimental', added info on enabling translation
 

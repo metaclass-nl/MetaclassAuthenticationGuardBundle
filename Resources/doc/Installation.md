@@ -118,14 +118,14 @@ Installation
 
     ```
 
-9. The user interface for user administrators to look into why a user may have been blocked is experimental and its labels are still in Dutch.
-    If you want enable it, add the following to your app/config/routing.yml:
+9. The user interface for user administrators to look into why a user may have been blocked is optional.
+    To enable it add the following to your app/config/routing.yml:
     ```yml
     	metaclass_auth_guard:
             resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
             prefix:   /guard
     ```
-     And add the path of the user interface to your firewall in app/conf/security.yml:
+     And add the path of the user interface to your firewall in app/config/security.yml:
     ```yml
         access_control:
             - { path: ^/guard, roles: ROLE_ADMIN }
@@ -134,12 +134,18 @@ Installation
      Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
      appropriate for your application's security configuration.
 
+     It needs translation enabled in your app/config/config.yml:
+    ```yml
+         framework:
+             translator:      { fallbacks: ["%locale%"] }
+    ```
      The user interface has the following entries:
      - guard/statistics
      - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
      - guard/statistics/username (replace 'username' by an actual username)
 
      The default template assumes you have base.html.twig still in app/Resources/views.
+     See configuration 13 to make it extend your applications layout.
 
      Resources/config/services.yml defines parameters for the controller class and
      the StatsPeriod formtype. You may override them to use your own (sub)classes.
@@ -309,8 +315,9 @@ Configurations
 
     Bundlename:views subfolder:template filename
 
-    In an actual application you typically use a template of your own that extends your own layout
-    and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig.
+    In an actual application you typically set this to a template of your own.
+    It will proabbly extend your own layout and may include
+    MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig.
 
     The default template assumes you have base.html.twig still in app/Resources/views.
 
