@@ -328,4 +328,8 @@ Corrected documentation
 - Resources/doc/Installation.md
     9. The user interface for user administrators
         removed 'experimental', added info on enabling translation
+committed, pushed
+---------------------------------------------------------
+Adaptation to Symfony 2.8
+- Resources/config/services.yml escaped \ in quoted strings
 
