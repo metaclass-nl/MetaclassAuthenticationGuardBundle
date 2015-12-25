@@ -52,8 +52,7 @@ high (database) server loads when performance degrades, under specific condition
 information may still be extractable by timing. Furthermore, the measures against
 timing attacks where not tested for practical effectiveness.
 
-The web based administration user interface is experimental, requires doctrine/doctrine-bundle
-and is currenly only in English and Dutch (Please clone me on Github and add your own language translation!).
+The web based administration user interface is currenly only in English and Dutch (Please clone me on Github and add your own language translation!).
 
 0.3.* versions are tested with Symfony 2.3 and 2.6.
 
