@@ -95,6 +95,8 @@ Installation
             randomSleepingNanosecondsMax: 99999
         ui:
             dateTimeFormat: "SHORT"
+            statistics:
+                template: "MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig"
     ```
 
 8. From cron or so you may garbage-collect/pack stored RequestCounts:
@@ -121,7 +123,7 @@ Installation
     ```yml
     	metaclass_auth_guard:
             resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
-            prefix:   /
+            prefix:   /guard
     ```
      And add the path of the user interface to your firewall in app/conf/security.yml:
     ```yml
@@ -138,18 +140,9 @@ Installation
      - guard/statistics/username (replace 'username' by an actual username)
 
      The default template assumes you have base.html.twig still in app/Resources/views.
-     In an actual application you typically use a template of your own that extends your own layout
-     and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig .
-     To change the template used override the parameter metaclass_auth_guard.statistics.template
-     in your applications configuration.
 
-     If your layout requires more parameters you probably want to use your own subclass
-     of GuardStatsController. For this you may override the route(s) from Resources/config/routing.yml
-     in your applications routing.yml after the metaclass_auth_guard resource configuration
-     or replace the resource configuration entirely.
-
-     If you want to use other datetime widgets you may override the parameter
-     metaclass_auth_guard.statistics.StatsPeriod.formType to refer to a class of your own.
+     Resources/config/services.yml defines parameters for the controller class and
+     the StatsPeriod formtype. You may override them to use your own (sub)classes.
 
      Currently the web based user interface only supports English and Dutch.
      Please clone the Bundle on Github and add your own language translation!
@@ -289,7 +282,8 @@ Configurations
     details a random between 0 and this value is added by ::sleepUntilSinceInit (which
     is called by ::sleepUntilFixedExecutionTime).
 
-12.
+12. Datetime format used by the web based user interface
+
     ui:
         dateTimeFormat
 
@@ -306,6 +300,19 @@ Configurations
     datetype and format, or override ::initDateTimeTransformer to set whatever
     transformer you may like (but that will not be used by the DateTimeType widgets in the
     Period form so you may want to set your own form type too).
+
+13. Template used by the web based user interface for user administrators
+
+    ui:
+        statistics:
+            template
+
+    Bundlename:views subfolder:template filename
+
+    In an actual application you typically use a template of your own that extends your own layout
+    and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig.
+
+    The default template assumes you have base.html.twig still in app/Resources/views.
 
 Notes
 

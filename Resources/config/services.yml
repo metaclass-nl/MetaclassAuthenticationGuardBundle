@@ -3,8 +3,9 @@ parameters:
     metaclass_auth_guard.gateway.class: "Metaclass\TresholdsGovernor\Gateway\DbalGateway"
     metaclass_auth_guard.tresholds_governor.class: "Metaclass\TresholdsGovernor\Service\TresholdsGovernor"
     metaclass_auth_guard.authentication.listener.form.class: "Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard"
-    metaclass_auth_guard.statistics.StatsPeriod.formType: "Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType"
-    metaclass_auth_guard.statistics.template: "MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig"
+
+    metaclass_auth_guard.ui.statistics.controller: "MetaclassAuthenticationGuardBundle:GuardStats"
+    metaclass_auth_guard.ui.StatsPeriod.formType: "Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType"
 
 services:
 

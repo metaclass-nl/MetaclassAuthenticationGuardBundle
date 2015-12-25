@@ -299,6 +299,27 @@ Make web based user interface more extendable:
 - Resources/config/services.yml added parameters metaclass_auth_guard.statistics.StatsPeriod.formType
 - Controller\GuardStatsController::addStatsPeriodForm now uses parameter metaclass_auth_guard.statistics.StatsPeriod.formType
     ::initDateFormatAndPattern may be overridden for setting locale dependent (custom) patterns
-
+comitted, pushed, published, tagged v0.3.1
 ----------------------------------------------------
+#14: Make user interface independent of DoctrineBundle
+- Controller\GuardStatsController no longer uses annotations
+- Resources/config/routing.yml now defines each route individually
+- Resources/config/services.yml added param metaclass_auth_guard.ui.statistics.controller
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        added info about the controller template
 
+Make web based user interface more extendable:
+- DependencyInjection\Configuration::getConfigTreeBuilder added ui.statistics.template
+- DependencyInjection\MetaclassAuthenticationGuardExtension::load now sets param:
+      metaclass_auth_guard.ui.statistics.template
+- Resources/config/services.yml
+    . corrected the param name for the StatsPeriod formType
+    . removed the template param
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        removed info about the template parameter
+    12. Datetime format used by the web based user interface
+        title added
+    13. Template used by the web based user interface for user administrators
+        added

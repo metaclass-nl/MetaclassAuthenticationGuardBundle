@@ -6,9 +6,6 @@ namespace Metaclass\AuthenticationGuardBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard;
 use Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType;
@@ -30,7 +27,7 @@ class GuardStatsController extends Controller {
     protected $translateRelativeDateArray;
 
     /**
-     * @Route("/statistics", name="Guard_statistics")
+     * Route("/statistics", name="Guard_statistics")
      */
     public function statisticsAction()
     {
@@ -68,7 +65,7 @@ class GuardStatsController extends Controller {
     }
 
     /**
-     * @Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
+     * Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
      */
     public function historyAction($ipAddress)
     {
@@ -105,8 +102,9 @@ class GuardStatsController extends Controller {
             $this->container->getParameter('metaclass_auth_guard.statistics.template'),
             $params);
     }
-        /**
-     * @Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
+
+    /**
+     * Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
      */
      public function statisticsByUserNameAction($username)
     {
@@ -180,7 +178,7 @@ class GuardStatsController extends Controller {
         $labels = array('From' => 'StatsPeriod.From', 'Until' => 'StatsPeriod.Until');
         $historyLimit = new \DateTime("$governor->dtString - $governor->keepCountsFor");
 
-        $formTypeClass = $this->container->getParameter('metaclass_auth_guard.statistics.StatsPeriod.formType');
+        $formTypeClass = $this->container->getParameter('metaclass_auth_guard.ui.StatsPeriod.formType');
         if (!class_exists($formTypeClass)) {
             throw new RuntimeException("value of metaclass_auth_guard.statistics.StatsPeriod.formType is not a class: '$formTypeClass'");
         }
