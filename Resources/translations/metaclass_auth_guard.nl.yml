@@ -1,0 +1,55 @@
+statistics:
+    title: Inlogbeveiliging
+
+history:
+    title: Inloghistorie
+    show: Toon inloghistorie
+
+statisticsByUserName:
+    isUsernameBlocked: Gebruikersnaam geblokkeerd
+
+tresholds_governor_params:
+    countingSince: Telt sinds
+    blockUsernamesFor: Blokkeeer gebruikersnamen voor
+    blockIpAddressesFor: Blokkeeer IP adressen voor
+    allowReleasedUserOnAddressFor: Gebruikersnaam op adres vrijgeven voor
+    limitPerUserName: Maximum per gebruikersnaam
+    limitBasePerIpAddress: Maximum per Adres
+
+secu_requests:
+    username: Gebruikersnaam
+    loginsFailed: Mislukte inlogpogingen
+    loginsSucceeded: Succesvolle inlogpogingen
+    col:
+        dtFrom: Vanaf
+        username: Naam
+        ipAddress: Adres
+        loginsSucceeded: Succesvol
+        loginsFailed: Mislukt
+        ipAddressBlocked: adres
+        usernameBlocked: naam
+        usernameBlockedForIpAddress: naam op adres
+        usernameBlockedForCookie: naam op cookie
+    blockedColumns: Aantal pogingen geblokkeerd op
+
+countsGroupedByIpAddress:
+    col:
+         blocked: Blok
+         usernames: Namen
+
+StatsPeriod:
+    From: Van
+    Until: Tot
+    history: Historie
+    statistics: IP Adressen
+    submit: Tonen
+
+relativeDate:
+    minutes: minuten
+    hours: uren
+    days: dagen
+
+boolean:
+    0: Nee
+    1: Ja
+

@@ -270,16 +270,56 @@ Revert to targeting Symfony 2.6-2.8
 - UsernamePasswordFormAuthenticationGuard
 - composer.json
 - Corrected README.md (Requirements)
+--------------------------------------
+(master - merged changes from branche 0_3)
+Issue #15: Remove hard-coded Dutch labels
+- Controller\GuardStatsController replaced label values by translation keys
+    replaced options and their lookup by methods and calls
+    ::addStatsPeriodForm now passes datetype and datetime pattern to formtype
+    ::translateRelativeDate adapted
+    ::initDateFormatAndPattern, ::initDateTimeTransformer now use configuration parameter and support locale-dependent date formatting
+- Form\Type\StatsPeriodType now expects and uses datetype and datetime pattern
+- Resources/translations/metaclass_auth_guard.nl.yml added with Dutch translations
+- Resources/translations/metaclass_auth_guard.en.yml added with English translations
+- Resources/views/Guard/statistics_content.html.twig added trans calls
+- DependencyInjection\Configuration::getConfigTreeBuilder added ui.dateTimeFormat
+- DependencyInjection\MetaclassAuthenticationGuardExtension::load now sets param:
+      metaclass_auth_guard.ui.dateTimeFormat
+- Readme.md restored the Web based user interface feature
+- Resources/doc/Installation.md added doc on:
+  - Bundle parameter metaclass_auth_guard.ui.dateTimeFormat
+  - services parameter metaclass_auth_guard.statistics.StatsPeriod.formType
+  - Available translations (&clone me on Github)
 
-2DO:
-ArboSDW verbeteren:
-- normale hyperlinks onderscheiden, maar hyperlinks in menu grijs houden
+Issue #17: Default configuration set without adding to config.yml
+- DependencyInjection\Configuration::getConfigTreeBuilder added ->addDefaultsIfNotSet() to each arraynode
 
-- tanslation
+Make web based user interface more extendable:
+- Resources/config/services.yml added parameters metaclass_auth_guard.statistics.StatsPeriod.formType
+- Controller\GuardStatsController::addStatsPeriodForm now uses parameter metaclass_auth_guard.statistics.StatsPeriod.formType
+    ::initDateFormatAndPattern may be overridden for setting locale dependent (custom) patterns
+----
+#14: Make user interface independent of DoctrineBundle
+- Controller\GuardStatsController no longer uses annotations
+- Resources/config/routing.yml now defines each route individually
+- Resources/config/services.yml added param metaclass_auth_guard.ui.statistics.controller
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        added info about the controller template
 
-- solve problem with params if not defined:
-metaclass_authentication_guard:
-    db_connection:
-        name: ""
-    tresholds_governor_params:
-        counterDurationInSeconds:  300
+Make web based user interface more extendable:
+- DependencyInjection\Configuration::getConfigTreeBuilder added ui.statistics.template
+- DependencyInjection\MetaclassAuthenticationGuardExtension::load now sets param:
+      metaclass_auth_guard.ui.statistics.template
+- Resources/config/services.yml
+    . corrected the param name for the StatsPeriod formType
+    . removed the template param
+- Resources/doc/Installation.md
+    9. The user interface for user administrators
+        removed info about the template parameter
+    12. Datetime format used by the web based user interface
+        title added
+    13. Template used by the web based user interface for user administrators
+        added
+
+

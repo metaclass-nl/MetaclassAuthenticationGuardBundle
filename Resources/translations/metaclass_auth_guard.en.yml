@@ -1,0 +1,55 @@
+statistics:
+    title: Authentication Guard
+
+history:
+    title: Authentication history
+    show: Show authentication history
+
+statisticsByUserName:
+    isUsernameBlocked: Username blocked
+
+tresholds_governor_params:
+    countingSince: Counting since
+    blockUsernamesFor: Block usernames for
+    blockIpAddressesFor: Block IP addresses for
+    allowReleasedUserOnAddressFor: Release user on address for
+    limitPerUserName: Maximum per username
+    limitBasePerIpAddress: Maximum per IP adress
+
+secu_requests:
+    username: Username
+    loginsFailed: Failed logins
+    loginsSucceeded: Successfull logins
+    col:
+        dtFrom: From
+        username: Username
+        ipAddress: Address
+        loginsSucceeded: Succeeded
+        loginsFailed: Failed
+        ipAddressBlocked: address
+        usernameBlocked: name
+        usernameBlockedForIpAddress: name on addresd
+        usernameBlockedForCookie: name on cookie
+    blockedColumns: Number of attepmts blocked for
+
+countsGroupedByIpAddress:
+    col:
+         blocked: Blocked
+         usernames: Names
+
+StatsPeriod:
+    From: From
+    Until: Until
+    history: History
+    statistics: IP Adresses
+    submit: Show
+
+relativeDate:
+    minutes: minutes
+    hours: hours
+    days: days
+
+boolean:
+    0: Yes
+    1: No
+

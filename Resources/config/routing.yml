@@ -5,7 +5,18 @@
 # otherwise anybody will be able to see the user names, ip addresses, date, time and more
 # of all login attemtps!!!
 #
-Guard:
-    resource: "@MetaclassAuthenticationGuardBundle/Controller/GuardStatsController.php"
-    type:     annotation
-    prefix:   /guard
+Guard_statistics:
+    path: /statistics
+    defaults:  { _controller: "%metaclass_auth_guard.ui.statistics.controller%:statistics" }
+
+Guard_history:
+    path: /history/{ipAddress}
+    defaults: { _controller: "%metaclass_auth_guard.ui.statistics.controller%:history" }
+    requirements:
+        ipAddress: "[^/]+"
+
+Guard_statisticsByUserName:
+    path: /statistics/{username}
+    defaults:  { _controller: "%metaclass_auth_guard.ui.statistics.controller%:statisticsByUserName" }
+    requirements:
+        username: "[^/]*"

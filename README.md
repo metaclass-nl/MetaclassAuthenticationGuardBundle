@@ -44,13 +44,11 @@ login form to hide differences between them that should not be reported to users
 
 May be vurnerable to enumeration of usernames through timing attacks because of
 differences in database query performance for frequently and infrequently used usernames.
-This can be mitigated by calling ::sleepUntilFixedExecutionTime. Under normal circomstances
+This is mitigated by sleeping until a fixed execution time is reached. Under normal circomstances
 that should be sufficient if the fixedExecutionSeconds is set long enough, but under
 high (database) server loads when performance degrades, under specific conditions
 information may still be extractable by timing. Furthermore, the measures against
 timing attacks where not tested for practical effectiveness.
-
-The web based administration user interface is experimental and requires doctrine/doctrine-bundle.
 
 DOCUMENTATION
 -------------

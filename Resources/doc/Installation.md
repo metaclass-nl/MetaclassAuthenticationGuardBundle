@@ -76,7 +76,7 @@ Installation
                 - [setAuthExecutionSeconds, [0.99]] # voluntary
     ```
 
-7. You also need to add the following configuraton parameters (defaults shown):
+7. You may also add the following configuraton parameters (defaults shown):
 
 	```yml
     metaclass_authentication_guard:
@@ -93,6 +93,10 @@ Installation
             keepCountsFor: "4 days"
             fixedExecutionSeconds: "0.1"
             randomSleepingNanosecondsMax: 99999
+        ui:
+            dateTimeFormat: "SHORT"
+            statistics:
+                template: "MetaclassAuthenticationGuardBundle:Guard:statistics.html.twig"
     ```
 
 8. From cron or so you may garbage-collect/pack stored RequestCounts:
@@ -119,7 +123,7 @@ Installation
     ```yml
     	metaclass_auth_guard:
             resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
-            prefix:   /
+            prefix:   /guard
     ```
      And add the path of the user interface to your firewall in app/conf/security.yml:
     ```yml
@@ -136,15 +140,12 @@ Installation
      - guard/statistics/username (replace 'username' by an actual username)
 
      The default template assumes you have base.html.twig still in app/Resources/views.
-     In an actual application you typically use a template of your own that extends your own layout
-     and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig .
-     To change the template used override the parameter metaclass_auth_guard.statistics.template
-     in your applications configuration.
 
-     If your layout requires more parameters you probably want to use your own subclass
-     of GuardStatsController. For this you may override the route(s) from Resources/config/routing.yml
-     in your applications routing.yml after the metaclass_auth_guard resource configuration
-     or replace the resource configuration entirely.
+     Resources/config/services.yml defines parameters for the controller class and
+     the StatsPeriod formtype. You may override them to use your own (sub)classes.
+
+     Currently the web based user interface only supports English and Dutch.
+     Please clone the Bundle on Github and add your own language translation!
 
 10. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml
@@ -280,6 +281,38 @@ Configurations
     Because of doubts about the accurateness of microtime() and to hide system clock
     details a random between 0 and this value is added by ::sleepUntilSinceInit (which
     is called by ::sleepUntilFixedExecutionTime).
+
+12. Datetime format used by the web based user interface
+
+    ui:
+        dateTimeFormat
+
+    \IntlDateFormatter pattern or datetype. If a dattype is set
+    (FULL, LONG, MEDIUM or SHORT) (case independent) the corresponding
+    dateformat is used and no pattern so that the formatting will depend
+    on the locale. Otherwise the parameter is used as pattern with
+    \Symfony\Component\Form\Extension\Core\Type\DateTimeType::DEFAULT_DATE_FORMAT
+    as datetype. As timetype DateTimeType::DEFAULT_TIME_FORMAT allways used so that
+    the formatting is the same as done by the DateTimeType widgets in the Period form.
+
+    If you need specific patterns for different locales you may use your own subclass
+    of GuardStatsController and override ::initDateFormatAndPattern to set the appropriate
+    datetype and format, or override ::initDateTimeTransformer to set whatever
+    transformer you may like (but that will not be used by the DateTimeType widgets in the
+    Period form so you may want to set your own form type too).
+
+13. Template used by the web based user interface for user administrators
+
+    ui:
+        statistics:
+            template
+
+    Bundlename:views subfolder:template filename
+
+    In an actual application you typically use a template of your own that extends your own layout
+    and includes MetaclassAuthenticationGuardBundle:Guard:statistics_content.html.twig.
+
+    The default template assumes you have base.html.twig still in app/Resources/views.
 
 Notes
 
