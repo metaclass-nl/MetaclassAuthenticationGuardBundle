@@ -336,4 +336,8 @@ committed, pushed, published
 ----------------------------------------------------------
 Layout
 - Resources/doc/Installation.md added ```yml markings
+committed, pushed, published
+-----------------------------------------------------------
+Layout
+- Resources/doc/Installation.md some details
 

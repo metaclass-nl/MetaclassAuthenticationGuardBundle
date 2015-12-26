@@ -132,17 +132,17 @@ Installation
     ```
      (there will probably already be an access_control configuration with several paths listed.
      Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
-     appropriate for your application's security configuration.
+     appropriate for your application's security configuration.)
 
-     It needs translation enabled in your app/config/config.yml:
+     The user interface needs translation enabled in your app/config/config.yml:
     ```yml
          framework:
              translator:      { fallbacks: ["%locale%"] }
     ```
-     The user interface has the following entries:
-     - guard/statistics
-     - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
-     - guard/statistics/username (replace 'username' by an actual username)
+     It has the following entries:
+        - guard/statistics
+        - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
+        - guard/statistics/username (replace 'username' by an actual username)
 
      The default template assumes you have base.html.twig still in app/Resources/views.
      See configuration 13 to make it extend your applications layout.
