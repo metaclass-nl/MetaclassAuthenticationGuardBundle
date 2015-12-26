@@ -125,33 +125,33 @@ Installation
             resource: "@MetaclassAuthenticationGuardBundle/Resources/config/routing.yml"
             prefix:   /guard
     ```
-     And add the path of the user interface to your firewall in app/config/security.yml:
+    And add the path of the user interface to your firewall in app/config/security.yml:
     ```yml
         access_control:
             - { path: ^/guard, roles: ROLE_ADMIN }
     ```
-     (there will probably already be an access_control configuration with several paths listed.
-     Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
-     appropriate for your application's security configuration.)
+    (there will probably already be an access_control configuration with several paths listed.
+    Add the above path to the list in an appropriate place. You may have to adapt ROLE_ADMIN to the user role identifier
+    appropriate for your application's security configuration.)
 
-     The user interface needs translation enabled in your app/config/config.yml:
+    The user interface needs translation enabled in your app/config/config.yml:
     ```yml
          framework:
              translator:      { fallbacks: ["%locale%"] }
     ```
-     It has the following entries:
-        - guard/statistics
-        - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
-        - guard/statistics/username (replace 'username' by an actual username)
+    It has the following entries:
+    - guard/statistics
+    - guard/history/ipAddress (replace 'ipAddress' by an actual ip address)
+    - guard/statistics/username (replace 'username' by an actual username)
 
-     The default template assumes you have base.html.twig still in app/Resources/views.
-     See configuration 13 to make it extend your applications layout.
+    The default template assumes you have base.html.twig still in app/Resources/views.
+    See configuration 13 to make it extend your applications layout.
 
-     Resources/config/services.yml defines parameters for the controller class and
-     the StatsPeriod formtype. You may override them to use your own (sub)classes.
-
-     Currently the web based user interface only supports English and Dutch.
-     Please clone the Bundle on Github and add your own language translation!
+    Resources/config/services.yml defines parameters for the controller class and
+    the StatsPeriod formtype. You may override them to use your own (sub)classes.
+    
+    Currently the web based user interface only supports English and Dutch.
+    Please clone the Bundle on Github and add your own language translation!
 
 10. If you want to run the tests you may add the following to the testsuites section of your app/phpunit.xml:
 	```xml
