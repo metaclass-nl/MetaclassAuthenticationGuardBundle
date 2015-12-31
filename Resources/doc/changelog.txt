@@ -340,4 +340,11 @@ committed, pushed, published
 -----------------------------------------------------------
 Layout
 - Resources/doc/Installation.md some details
+committed, pushed, published
+created branche 0_4
+-------------------------------------------------------
+(master)
+#20: Adapt to Symfony 3.0
+- composer.json require "symfony/symfony": ">=3.0"
+
 
