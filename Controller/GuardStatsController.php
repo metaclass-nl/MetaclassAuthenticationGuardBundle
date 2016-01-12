@@ -9,7 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard;
 use Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
 
 class GuardStatsController extends Controller {
 
@@ -29,7 +31,7 @@ class GuardStatsController extends Controller {
     /**
      * Route("/statistics", name="Guard_statistics")
      */
-    public function statisticsAction()
+    public function statisticsAction(Request $request)
     {
         $this->initDateTimeTransformer();
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
@@ -45,13 +47,13 @@ class GuardStatsController extends Controller {
         $fieldValues['failureCount'] = $governor->requestCountsManager->countLoginsFailed($countingSince);
         $fieldValues['successCount'] = $governor->requestCountsManager->countLoginsSucceeded($countingSince);
 
-        $limitFrom = $this->getRequest()->isMethod('POST')
+        $limitFrom = $request->isMethod('POST')
             ? null
             : $countingSince;
-        $limits = $this->addStatsPeriodForm($params, $governor, 'StatsPeriod.statistics', $limitFrom);
+        $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.statistics', $limitFrom);
 
         if (isSet($limits['From'])) {
-            $this->addCountsGroupedTableParams($params, $governor, $limits);
+            $this->addCountsGroupedTableParams($params, $request, $governor, $limits);
             $params['blockedHeaderIndent'] = 6;
             $params['labels'] = array('show' => 'history.show');
             $params['route_history'] = 'Guard_history';
@@ -67,7 +69,7 @@ class GuardStatsController extends Controller {
     /**
      * Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
      */
-    public function historyAction($ipAddress)
+    public function historyAction(Request $request, $ipAddress)
     {
         $this->initDateTimeTransformer();
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
@@ -87,7 +89,7 @@ class GuardStatsController extends Controller {
             'limitBasePerIpAddress' => $governor->limitBasePerIpAddress,
             );
 
-        $limits = $this->addStatsPeriodForm($params, $governor, 'StatsPeriod.history');
+        $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.history');
 
         if (isSet($limits['From'])) {
             $history = $governor->requestCountsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
@@ -106,7 +108,7 @@ class GuardStatsController extends Controller {
     /**
      * Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
      */
-     public function statisticsByUserNameAction($username)
+    public function statisticsByUserNameAction(Request $request, $username)
     {
         $this->initDateTimeTransformer();
         $filtered = UsernamePasswordFormAuthenticationGuard::filterCredentials(array($username, ''));
@@ -133,10 +135,10 @@ class GuardStatsController extends Controller {
         $fieldValues['usernameBlocked'] = $this->booleanLabel($isUsernameBlocked);
         $fieldValues['allowReleasedUserOnAddressFor'] = $this->translateRelativeDate($governor->allowReleasedUserOnAddressFor);
 
-        $limitFrom = $this->getRequest()->isMethod('POST') || $this->getRequest()->get('StatsPeriod')
+        $limitFrom = $request->isMethod('POST') || $request->get('StatsPeriod')
             ? null
             : $countingSince;
-        $limits = $this->addStatsPeriodForm($params, $governor, 'Historie', $limitFrom);
+        $limits = $this->addStatsPeriodForm($params, $request, $governor, 'Historie', $limitFrom);
         if (isSet($limits['From'])) {
             $params['labels'] = array('show' => 'history.show');
             $params['route_history'] = 'Guard_history';
@@ -172,7 +174,7 @@ class GuardStatsController extends Controller {
         $params['blockedHeaderIndent'] = 5;
     }
 
-    protected function addStatsPeriodForm(&$params, $governor, $label, $limitFrom=null)
+    protected function addStatsPeriodForm(&$params, $request, $governor, $label, $limitFrom=null)
     {
         $limits['Until'] = new \DateTime();
         $labels = array('From' => 'StatsPeriod.From', 'Until' => 'StatsPeriod.Until');
@@ -182,12 +184,18 @@ class GuardStatsController extends Controller {
         if (!class_exists($formTypeClass)) {
             throw new RuntimeException("value of metaclass_auth_guard.statistics.StatsPeriod.formType is not a class: '$formTypeClass'");
         }
-        $form = $this->createForm(
-            new $formTypeClass($labels, $historyLimit, $this->dateFormat, $this->dateTimePattern),
-            null,
-            array('label' => $label, 'csrf_protection' => false,'translation_domain' => 'metaclass_auth_guard'));
+
+        $builderOptions = array('label' => $label, 'csrf_protection' => false,'translation_domain' => 'metaclass_auth_guard', 'method' => $request->getMethod()); // 'data' => $data;
+        $typeOptions = array('labels' => $labels, 'min' => $historyLimit, 'date_format' => $this->dateFormat, 'dateTimePattern' => $this->dateTimePattern);
+
+        // Replaces FormFactory::createNamedBuilder - Maybe we should implement $formTypeClass::configureOptions so that we can use $this->createForm?
+        $type = $this->container->get('form.registry')->getType($formTypeClass);
+        $builder = $type->createBuilder($this->container->get('form.factory'), $type->getBlockPrefix(), $builderOptions);
+        $type->buildForm($builder, array_merge($builder->getOptions(), $typeOptions) );
+        $form = $builder->getForm();
+
         if ($limitFrom === null) {
-            $form->submit($this->getRequest());
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $limits['From'] = $form->get('From')->getData();
                 $limits['Until'] = $form->get('Until')->getData();
@@ -220,7 +228,7 @@ class GuardStatsController extends Controller {
         $params['fieldValues'] = $fieldValues;
     }
 
-    protected function addCountsGroupedTableParams(&$params, $governor, $limits)
+    protected function addCountsGroupedTableParams(&$params, $request, $governor, $limits)
     {
         $countsByIpAddress = $governor->requestCountsManager->countsGroupedByIpAddress($limits['From'], $limits['Until']);
         $params['columnSpec'] = array(
@@ -234,7 +242,7 @@ class GuardStatsController extends Controller {
             'secu_requests.col.usernameBlockedForIpAddress' => 'usernameBlockedForIpAddress',
             'secu_requests.col.usernameBlockedForCookie' => 'usernameBlockedForCookie',
         );
-        if ($this->getRequest()->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
             unSet($params['columnSpec']['Blok']);
         }
         forEach($countsByIpAddress as $key => $row)

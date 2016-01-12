@@ -6,43 +6,35 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Form\Extension\Core\Type;
+
 
 class StatsPeriodType extends AbstractType
 {
-    protected $labels;
-
-    public function __construct($labels, \DateTime $min, $dateFormat, $formatPattern)
-    {
-        $this->labels = $labels;
-        $this->min = $min;
-        $this->dateFormat = $dateFormat;
-        $this->formatPattern = $formatPattern;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $constraints = array(new Date(),
-            new GreaterThan(array('value' => $this->min)),
+            new GreaterThan(array('value' => $options['min'])),
         );
-        $builder->add('From', 'datetime', array(
-                'label' => $this->labels['From'],
+        $builder->add('From', Type\DateTimeType::class, array(
+                'label' => $options['labels']['From'],
                 'required' => true,
                 'widget' => 'single_text',
-                'date_format' => $this->dateFormat,
-                'format' => $this->formatPattern,
+                'date_format' => $options['date_format'],
+                'format' => $options['dateTimePattern'],
                 'constraints' => $constraints
             ));
-        $builder->add('Until', 'datetime', array(
-                'label' => $this->labels['Until'],
+        $builder->add('Until', Type\DateTimeType::class, array(
+                'label' => $options['labels']['Until'],
                 'required' => false,
                 'widget' => 'single_text',
-                'date_format' => $this->dateFormat,
-                'format' => $this->formatPattern,
+                'date_format' => $options['date_format'],
+                'format' => $options['dateTimePattern'],
                 'constraints' => $constraints
             ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'StatsPeriod';
     }

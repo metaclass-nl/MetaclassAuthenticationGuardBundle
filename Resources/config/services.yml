@@ -11,11 +11,9 @@ services:
 
 # Entity Manager for Request Counters
     metaclass_auth_guard.connection_login:
-        factory_service: doctrine
-        factory_method: getConnection
         class: Doctrine\DBAL\Connection
-        public: false
-        arguments: [%metaclass_auth_guard.db_connection.name%] 
+        factory: ["@doctrine", getConnection]
+        arguments: [%metaclass_auth_guard.db_connection.name%]
 
     metaclass_auth_guard.gateway:
         class: %metaclass_auth_guard.gateway.class%

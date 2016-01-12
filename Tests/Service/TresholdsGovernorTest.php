@@ -24,9 +24,16 @@ class TresholdsGovernorTest extends WebTestCase // \PHPUnit_Framework_TestCase
             $kernel = $kernel->getKernel();
         }
         $container = $kernel->getContainer();
-        
+        $connectionName = $container->getParameter('metaclass_auth_guard.db_connection.name');
+        $this->assertNotNull($connectionName, 'metaclass_auth_guard.db_connection.name');
+
+        $doctrine = $container->get('doctrine');
+        $connection = $doctrine->getConnection($connectionName);
+        $this->assertNotNull($connection, 'connection retieved from doctrine service');
+
         $service = $container->get('metaclass_auth_guard.tresholds_governor');
-        
+        $this->assertNotNull($service, 'metaclass_auth_guard.tresholds_governor');
+
         //we don't want to to use the same governor that may be used in handling the request to the UnitTestController
         $this->governer = clone $service;
 

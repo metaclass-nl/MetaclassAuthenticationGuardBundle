@@ -14,7 +14,7 @@
   </div>
 {% endif %}
 {% if form is defined %}
-  <form id="{{ form.vars.name }}" class="form-inline" role="form" action="{{ path(routes.this, action_params) }}" method="post" {{ form_enctype(form) }}>
+  <form id="{{ form.vars.name }}" class="form-inline" role="form" action="{{ path(routes.this, action_params) }}" method="post" enctype="multipart/form-data">
     <fieldset class="editform-fieldset" for="GuardStats_period">
       <legend class="fieldset-legend">{{ form.vars.label|trans({}, 'metaclass_auth_guard') }}</legend>
       <div class="form-group">
