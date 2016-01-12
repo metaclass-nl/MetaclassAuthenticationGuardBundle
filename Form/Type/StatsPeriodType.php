@@ -4,6 +4,7 @@ namespace Metaclass\AuthenticationGuardBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -37,5 +38,11 @@ class StatsPeriodType extends AbstractType
     public function getBlockPrefix()
     {
         return 'StatsPeriod';
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(['dateTimePattern' => null, 'date_format' => Type\DateTimeType::DEFAULT_DATE_FORMAT]);
+        $resolver->setRequired(['min', 'labels', 'date_format', 'dateTimePattern']);
     }
 }

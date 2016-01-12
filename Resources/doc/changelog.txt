@@ -387,7 +387,15 @@ The getRequest method of the base Controller class has been deprecated since Sym
 
 The form_enctype helper was removed.
 - Resources/views/Guard/statistics_content.html.twig replaced {{ form_enctype(form) }} by enctype="multipart/form-data"
+committed, pushed, published
 ------------------------------------------
 #20: Adapt to Symfony 3.0
 - README.md adapted requirements
+committed, pushed, published
 -------------------------------------------
+#20: Adapt to Symfony 3.0
+Controller::createForm and FormFactory::createNamedBuilder now require fully qualyfied class name of type instead instance
+    Implement ::configureOptions instead of replacing Controller::createForm
+- Form\Type\StatsPeriodType::configureOptions added
+- Controller\GuardStatsController::addStatsPeriodForm now passes all options to Controller::createForm
+------------------------------------

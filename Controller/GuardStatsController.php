@@ -185,14 +185,18 @@ class GuardStatsController extends Controller {
             throw new RuntimeException("value of metaclass_auth_guard.statistics.StatsPeriod.formType is not a class: '$formTypeClass'");
         }
 
-        $builderOptions = array('label' => $label, 'csrf_protection' => false,'translation_domain' => 'metaclass_auth_guard', 'method' => $request->getMethod()); // 'data' => $data;
-        $typeOptions = array('labels' => $labels, 'min' => $historyLimit, 'date_format' => $this->dateFormat, 'dateTimePattern' => $this->dateTimePattern);
-
-        // Replaces FormFactory::createNamedBuilder - Maybe we should implement $formTypeClass::configureOptions so that we can use $this->createForm?
-        $type = $this->container->get('form.registry')->getType($formTypeClass);
-        $builder = $type->createBuilder($this->container->get('form.factory'), $type->getBlockPrefix(), $builderOptions);
-        $type->buildForm($builder, array_merge($builder->getOptions(), $typeOptions) );
-        $form = $builder->getForm();
+        $options = array(
+            'label' => $label,
+            'csrf_protection' => false,
+            'translation_domain' => 'metaclass_auth_guard',
+            'method' => $request->getMethod(),
+            // custom options defined by StatsPeriodType::configureOptions:
+            'labels' => $labels,
+            'min' => $historyLimit,
+            'date_format' => $this->dateFormat,
+            'dateTimePattern' => $this->dateTimePattern
+        );
+        $form = $this->createForm($formTypeClass, null, $options);
 
         if ($limitFrom === null) {
             $form->handleRequest($request);
