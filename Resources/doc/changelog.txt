@@ -398,10 +398,15 @@ Controller::createForm and FormFactory::createNamedBuilder now require fully qua
     Implement ::configureOptions instead of replacing Controller::createForm
 - Form\Type\StatsPeriodType::configureOptions added
 - Controller\GuardStatsController::addStatsPeriodForm now passes all options to Controller::createForm
-comitted, pushed, published
+committed, pushed, published
 ------------------------------------
 #14: Symfony / Doctrine Compatibility
 Adaptation to Symfony 3.0 has made all tests run on Symfony 2.8.1. and the user interface for administrators run without deprication warnings
 - composer.json require "symfony/symfony": ">=2.8.1"
 - README.md adapted requirements
+committed, pushed, published
 ---------------------------
+#14: Symfony / Doctrine Compatibility
+- README.md adapted requirements
+committed, pushed
+--------------------------
