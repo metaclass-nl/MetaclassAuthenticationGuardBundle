@@ -387,3 +387,7 @@ The getRequest method of the base Controller class has been deprecated since Sym
 
 The form_enctype helper was removed.
 - Resources/views/Guard/statistics_content.html.twig replaced {{ form_enctype(form) }} by enctype="multipart/form-data"
+------------------------------------------
+#20: Adapt to Symfony 3.0
+- README.md adapted requirements
+-------------------------------------------
