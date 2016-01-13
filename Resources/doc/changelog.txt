@@ -345,3 +345,10 @@ Layout
 #21: English boolean translations inverted
 - Resources/translations/metaclass_auth_guard.en.yml corrected
 --------------------------------------------------
+(0_4)
+#20: Adapt to Symfony 3.0
+Since Symfony 2.6 last conctructor argument may be a CsrfTokenManagerInterface
+Since 3.0 it is typehinted CsrfTokenManagerInterface
+- Service\UsernamePasswordFormAuthenticationGuard renamed $csrfProvider to $csrfTokenManager
+    ::__construct replaced CsrfProviderInterface by CsrfTokenManagerInterface
+    ::checkCrsfToken replaced with code from UsernamePasswordFormAuthenticationListener
