@@ -340,4 +340,8 @@ committed, pushed, published
 -----------------------------------------------------------
 Layout
 - Resources/doc/Installation.md some details
-
+----------------------------------------------
+(merged from branche 0_3)
+#21: English boolean translations inverted
+- Resources/translations/metaclass_auth_guard.en.yml corrected
+--------------------------------------------------
