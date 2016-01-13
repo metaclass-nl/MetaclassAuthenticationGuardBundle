@@ -360,5 +360,6 @@ In Symfony 2.6 the first constructor argument of UsernamePasswordFormAuthenticat
 is (now) typehinted as SecurityContextInterface
 - composer.json require "symfony/symfony": ">=2.7"
 - adapted README.md
+Tested with FOSUserBundle
 - adapted Installation.md
 ----------------------------------
