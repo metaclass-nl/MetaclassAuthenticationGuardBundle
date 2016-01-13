@@ -335,3 +335,7 @@ Corrected documentation
 - Resources/doc/Installation.md
     9. The user interface for user administrators
         removed 'experimental', added info on enabling translation
+---------------------------------------------
+(branche 0_3)
+#21: English boolean translations inverted
+- Resources/translations/metaclass_auth_guard.en.yml corrected
