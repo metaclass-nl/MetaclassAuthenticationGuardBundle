@@ -421,3 +421,9 @@ Since 3.0 it is typehinted CsrfTokenManagerInterface
 - Service\UsernamePasswordFormAuthenticationGuard renamed $csrfProvider to $csrfTokenManager
     ::__construct replaced CsrfProviderInterface by CsrfTokenManagerInterface
     ::checkCrsfToken replaced with code from UsernamePasswordFormAuthenticationListener
+comitted, pushed, published
+-------------------------------
+Tested with FOSUserBundle
+- adapted Installation.md (merged from branche 0_4)
+- adapted README.md (master)
+----------------------------------

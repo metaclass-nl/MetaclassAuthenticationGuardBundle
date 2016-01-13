@@ -21,10 +21,15 @@ Installation
 	            form_login:
 	            	id: somecustomserviceid 
 	```
-	you are using a custom form authenticaton listener service. This bundle can only guard it if your service is configured
+	you are using a custom form authenticaton listener service.
+	May or may not work depending on the configuration of your service.
+	(works with FOSUserBundle 1.3 and probably with 2.0 too)
+
+	This bundle can only guard your service ig it is configured
 	to use the default security.authentication.listener.form.class 
 	(Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener)
-	and you will have to write your own configuration to use instead of the one under step 4.
+	and you may have to write your own configuration to use instead of the one under step 6
+	(the one under step 6 did work with FOSUserBundle).
 
 2. Require the bundle and the tresholds governor library it needs in your composer.json
 	```js
