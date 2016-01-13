@@ -26,10 +26,12 @@ FEATURES
 
 REQUIREMENTS
 ------------
-This bundle is for the symfony framework and requires Symfony >=2.6 and <3.0-dev.
-(for Symfony ~2.3 use v0.3)
+This version of the bundle is for the symfony framework and requires Symfony >=2.7 and <3.0-dev.
+(for Symfony ~2.3 use v0.3, for Symfony 3.0 use v0.5/master)
 Requires metaclass-nl/tresholds-governor 0.2@dev which uses Doctrine DBAL >=2.3
-Tested with MySQL 5.5.
+Tested with MySQL 5.5, PHP7.0.1 (requires Symfony 2.8!),
+Tested on Symfony 2.7.7 (without crsf token)
+and on Symfony 2.8.1 with FOSUserBundle 1.3.6 and 6ccff96 (> 2.0.0 alpha3).
 
 RELEASE NOTES
 -------------

@@ -352,3 +352,13 @@ Since 3.0 it is typehinted CsrfTokenManagerInterface
 - Service\UsernamePasswordFormAuthenticationGuard renamed $csrfProvider to $csrfTokenManager
     ::__construct replaced CsrfProviderInterface by CsrfTokenManagerInterface
     ::checkCrsfToken replaced with code from UsernamePasswordFormAuthenticationListener
+comitted, pushed, published
+-------------------------------
+(branche 0_4)
+#14: Symfony / Doctrine Compatibility
+In Symfony 2.6 the first constructor argument of UsernamePasswordFormAuthenticationListener
+is (now) typehinted as SecurityContextInterface
+- composer.json require "symfony/symfony": ">=2.7"
+- adapted README.md
+- adapted Installation.md
+----------------------------------
