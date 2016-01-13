@@ -50,6 +50,6 @@ relativeDate:
     days: days
 
 boolean:
-    0: Yes
-    1: No
+    0: No
+    1: Yes
 

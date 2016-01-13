@@ -410,3 +410,7 @@ committed, pushed, published
 - README.md adapted requirements
 committed, pushed
 --------------------------
+(merged from branche 0_3)
+#21: English boolean translations inverted
+- Resources/translations/metaclass_auth_guard.en.yml corrected
+-----------------------------------------
