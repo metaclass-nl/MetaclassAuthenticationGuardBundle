@@ -17,7 +17,7 @@ class StatsPeriodType extends AbstractType
         $constraints = array(new Date(),
             new GreaterThan(array('value' => $options['min'])),
         );
-        $builder->add('From', Type\DateTimeType::class, array(
+        $builder->add('From', 'Symfony\Component\Form\Extension\Core\Type\DateTimeType', array(
                 'label' => $options['labels']['From'],
                 'required' => true,
                 'widget' => 'single_text',
@@ -25,7 +25,7 @@ class StatsPeriodType extends AbstractType
                 'format' => $options['dateTimePattern'],
                 'constraints' => $constraints
             ));
-        $builder->add('Until', Type\DateTimeType::class, array(
+        $builder->add('Until', 'Symfony\Component\Form\Extension\Core\Type\DateTimeType', array(
                 'label' => $options['labels']['Until'],
                 'required' => false,
                 'widget' => 'single_text',
@@ -42,7 +42,7 @@ class StatsPeriodType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['dateTimePattern' => null, 'date_format' => Type\DateTimeType::DEFAULT_DATE_FORMAT]);
-        $resolver->setRequired(['min', 'labels', 'date_format', 'dateTimePattern']);
+        $resolver->setDefaults(array('dateTimePattern' => null, 'date_format' => Type\DateTimeType::DEFAULT_DATE_FORMAT));
+        $resolver->setRequired(array('min', 'labels', 'date_format', 'dateTimePattern'));
     }
 }

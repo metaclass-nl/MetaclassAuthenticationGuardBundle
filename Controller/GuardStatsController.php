@@ -8,8 +8,6 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStr
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard;
-use Metaclass\AuthenticationGuardBundle\Form\Type\StatsPeriodType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 

@@ -427,3 +427,9 @@ Tested with FOSUserBundle
 - adapted Installation.md (merged from branche 0_4)
 - adapted README.md (master)
 ----------------------------------
+(master)
+#14: Symfony / Doctrine Compatibility: compatibility with php < 5.5
+- Form\Type\StatsPeriodType::buildForm replace <Class>::class by Fully Qualified class names
+Other
+- GuardStatsController removed use statements for unused classes
+-------------------------------------------
