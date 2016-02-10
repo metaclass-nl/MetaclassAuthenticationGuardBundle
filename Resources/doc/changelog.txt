@@ -432,4 +432,10 @@ Tested with FOSUserBundle
 - Form\Type\StatsPeriodType::buildForm replace <Class>::class by Fully Qualified class names
 Other
 - GuardStatsController removed use statements for unused classes
+comitted, pushed, published/
 -------------------------------------------
+(master)
+#20: Adapt to Symfony 3.0
+- Framework startup has changed
+	. Resources/doc/Installation.md adapted 8. From cron or so
+--------------------------------------------

@@ -106,7 +106,8 @@ Installation
 
 8. From cron or so you may garbage-collect/pack stored RequestCounts:
 	```php
-    require_once 'app/AppKernel.php';
+	// if script is in subdir like /app or /web, otherwise adapt the path
+    $loader = require __DIR__.'/../app/autoload.php';
 
     $kernel = new AppKernel('prod', false); //for production environment. You may change 'prod' for other environments
     $kernel->loadClassCache();
