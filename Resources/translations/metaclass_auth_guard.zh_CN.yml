@@ -1,0 +1,55 @@
+statistics:
+    title: 认证保护
+
+history:
+    title:  认证的历史记录
+    show: Show authentication history
+IP Adres: IP地址
+statisticsByUserName:
+    isUsernameBlocked: 账号是/否锁定
+
+tresholds_governor_params:
+    countingSince: 统计时间
+    blockUsernamesFor: 账号锁定时间
+    blockIpAddressesFor: 用户IP锁定时间
+    allowReleasedUserOnAddressFor: 释放用户地址时间
+    limitPerUserName:  账号最大输入密码输错次数
+    limitBasePerIpAddress:  IP地址最大输入密码输错次数
+
+secu_requests:
+    username: 账号名称
+    loginsFailed: 登录失败
+    loginsSucceeded: 成功登录
+    col:
+        dtFrom: 访问时间
+        username: 账号名称
+        ipAddress: 访问IP地址
+        loginsSucceeded: 成功次数
+        loginsFailed: 失败次数
+        ipAddressBlocked: IP锁定次数
+        usernameBlocked: 账号锁定次数
+        usernameBlockedForIpAddress: name on addresd
+        usernameBlockedForCookie: name on cookie
+    blockedColumns: 请求的详细列表
+
+countsGroupedByIpAddress:
+    col:
+         blocked: 限制
+         usernames: Names
+
+StatsPeriod:
+    From:  从
+    Until:  到
+    history: 记录
+    statistics: IP地址列表
+    submit: 搜索
+
+relativeDate:
+    minutes: 分钟
+    hours: 小时
+    days: 天
+
+boolean:
+    0: 是
+    1: 否
+
