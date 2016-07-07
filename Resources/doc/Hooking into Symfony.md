@@ -6,6 +6,7 @@ Authentication Listener service
 
 To acticate the Guard the following setting replaces the default security.authentication.listener.form service:
 
+```yaml
 services: 
     security.authentication.listener.form:
         class: %metaclass_auth_guard.authentication.listener.form.class%
@@ -13,12 +14,13 @@ services:
         abstract: true
         calls:
             - [setGovenor, ["@metaclass_auth_guard.tresholds_governor"] ] # REQUIRED
+```
 
-Instead of an instance of Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener
-the service will be an instance of Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard.
+Instead of an instance of `Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener`
+the service will be an instance of `Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard`.
 
 Just like UsernamePasswordFormAuthenticationListener, UsernamePasswordFormAuthenticationGuard extends
-Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener.  Furthermore, some of its code
+`Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener`.  Furthermore, some of its code
 was copied from UsernamePasswordFormAuthenticationListener. The reason UsernamePasswordFormAuthenticationListener
 was not extended is that it makes some properties private that are needed by the Guard, and that 
 refactoring was needed so that only one small method could be inherited. 
@@ -53,7 +55,8 @@ And the user of the authentication entity manager does not need to have access t
 This keeps your application data one step further away from the authentication functions that can after all be accessed by everybody. 
  
 To allow this a specific Entity Manager service is used by the Tresholds Governor. Its Entity Manager name can
-be speficfied by the setting:
+be specified by the setting:
+
 ```yml
     entity_manager_login:
         name: ""
