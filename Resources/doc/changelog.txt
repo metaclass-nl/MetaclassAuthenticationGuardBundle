@@ -439,3 +439,21 @@ comitted, pushed, published/
 - Framework startup has changed
 	. Resources/doc/Installation.md adapted 8. From cron or so
 --------------------------------------------
+(master)
+唐兵兵 committed
+- Add Chinese Translation
+------------------------------------
+(master)
+stof committed on GitHub
+- Fix the markup in the doc
+-----------------------------------
+Merge pull request #24 from stof/patch-1
+- Use bound composer constraints
+---------------------------------
+(master)
+Merge pull request #25 from stof/patch-2
+Fix the markup in the doc
+-------------------------------
+(master)
+- Chinese translation adapted to google translate 0: 否, 1: 是
+-------------------------------------

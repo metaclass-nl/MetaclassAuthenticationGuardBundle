@@ -50,6 +50,6 @@ relativeDate:
     days: 天
 
 boolean:
-    0: 是
-    1: 否
+    0: 否
+    1: 是
 
