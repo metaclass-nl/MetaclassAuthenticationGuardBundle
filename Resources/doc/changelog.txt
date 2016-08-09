@@ -447,6 +447,7 @@ comitted, pushed, published/
 stof committed on GitHub
 - Fix the markup in the doc
 -----------------------------------
+(master)
 Merge pull request #24 from stof/patch-1
 - Use bound composer constraints
 ---------------------------------
