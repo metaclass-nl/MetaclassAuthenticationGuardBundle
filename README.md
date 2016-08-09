@@ -28,7 +28,8 @@ REQUIREMENTS
 ------------
 This bundle is for the symfony framework and this version requires Symfony >=2.8.1.
 (for Symfony ~2.3 use v0.3, for Symfony 2.7 use v0.4)
-Requires metaclass-nl/tresholds-governor 0.2@dev which uses Doctrine DBAL >=2.3
+Requires metaclass-nl/tresholds-governor 0.3@dev but the service configuration
+still requires Doctrine DBAL >=2.3.
 Tested with MySQL 5.5. Tested with PHP7.0.1. Tested with Symfony 3.0.1. (without crsf token)
 Tested on Symfony 2.8.1 with FOSUserBundle 1.3.6 and 6ccff96 (> 2.0.0 alpha3).
 

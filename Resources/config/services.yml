@@ -1,6 +1,6 @@
 parameters:
     metaclass_auth_guard.manager.class: "Metaclass\\TresholdsGovernor\\Manager\\RdbManager"
-    metaclass_auth_guard.gateway.class: "Metaclass\\TresholdsGovernor\\Gateway\\DbalGateway"
+    metaclass_auth_guard.gateway.class: "Metaclass\\TresholdsGovernor\\Gateway\\RdbGateway"
     metaclass_auth_guard.tresholds_governor.class: "Metaclass\\TresholdsGovernor\\Service\\TresholdsGovernor"
     metaclass_auth_guard.authentication.listener.form.class: "Metaclass\\AuthenticationGuardBundle\\Service\\UsernamePasswordFormAuthenticationGuard"
 

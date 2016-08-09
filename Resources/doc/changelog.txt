@@ -457,3 +457,9 @@ Fix the markup in the doc
 (master)
 - Chinese translation adapted to google translate 0: 否, 1: 是
 -------------------------------------
+(master)
+#9: cross framework library refactoring
+- TestholdsGovernorTest factored out TresholdsGovernor FunctionalTest
+Tresholds Governor Issue 2: support several rdb access interfaces
+- Resources/config/services.yml Renamed DbalGateway to RdbGateway
+- adapted services.yml, composer.json, README.ms
