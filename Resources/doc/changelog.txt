@@ -464,3 +464,12 @@ Fix the markup in the doc
 Tresholds Governor Issue 2: support several rdb access interfaces
 - Resources/config/services.yml Renamed DbalGateway to RdbGateway
 - adapted services.yml, composer.json, README.ms
+------------------------------------
+(master)
+Support separate \Metaclass\TresholdsGovernor\Manager\StatisticsManagerInterface
+- Added alias metaclass_auth_guard.statistics_manager to services.yml
+- TresholdsGovernorTest now uses service metaclass_auth_guard.statistics_manager
+- GuardStatsController now uses service metaclass_auth_guard.statistics_manager
+Typo in English translation
+- secu_requests.blockedColumns corrected 'attempts'
+------------------------------------

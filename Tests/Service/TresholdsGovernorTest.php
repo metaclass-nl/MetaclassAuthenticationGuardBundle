@@ -50,6 +50,8 @@ class TresholdsGovernorTest extends FunctionalTest // \PHPUnit_Framework_TestCas
         $this->governor->blockIpAddressesFor = '30 days'; //not very realistic, but should still work
         $this->governor->allowReleasedUserOnAddressFor = '30 days'; 
         $this->governor->allowReleasedUserByCookieFor =  '10 days';
+
+        $this->statisticsManager = $container->get('metaclass_auth_guard.statistics_manager');
     }
 
 }

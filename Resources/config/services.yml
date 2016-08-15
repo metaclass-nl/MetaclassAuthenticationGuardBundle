@@ -26,3 +26,6 @@ services:
     metaclass_auth_guard.tresholds_governor:
         class: %metaclass_auth_guard.tresholds_governor.class%
         arguments: [%metaclass_auth_guard.tresholds_governor_params%, "@metaclass_auth_guard.manager"]
+
+    metaclass_auth_guard.statistics_manager:
+         alias: metaclass_auth_guard.manager

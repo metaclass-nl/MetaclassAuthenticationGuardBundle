@@ -30,7 +30,7 @@ secu_requests:
         usernameBlocked: name
         usernameBlockedForIpAddress: name on addresd
         usernameBlockedForCookie: name on cookie
-    blockedColumns: Number of attepmts blocked for
+    blockedColumns: Number of attempts blocked for
 
 countsGroupedByIpAddress:
     col:

@@ -33,6 +33,7 @@ class GuardStatsController extends Controller {
     {
         $this->initDateTimeTransformer();
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
+        $statsManager = $this->get('metaclass_auth_guard.statistics_manager');
 
         $params['title'] = $this->get('translator')->trans('statistics.title', array(), 'metaclass_auth_guard');
         $params['routes']['this'] = 'Guard_statistics';
@@ -42,8 +43,8 @@ class GuardStatsController extends Controller {
         $countingSince = $governor->getMinBlockingLimit();
         $fieldValues =& $params['fieldValues'];
         $fieldValues['countingSince'] = $this->dtTransformer->transform($countingSince);
-        $fieldValues['failureCount'] = $governor->requestCountsManager->countLoginsFailed($countingSince);
-        $fieldValues['successCount'] = $governor->requestCountsManager->countLoginsSucceeded($countingSince);
+        $fieldValues['failureCount'] = $statsManager->countLoginsFailed($countingSince);
+        $fieldValues['successCount'] = $statsManager->countLoginsSucceeded($countingSince);
 
         $limitFrom = $request->isMethod('POST')
             ? null
@@ -51,7 +52,7 @@ class GuardStatsController extends Controller {
         $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.statistics', $limitFrom);
 
         if (isSet($limits['From'])) {
-            $this->addCountsGroupedTableParams($params, $request, $governor, $limits);
+            $this->addCountsGroupedTableParams($params, $request, $governor, $limits, $statsManager);
             $params['blockedHeaderIndent'] = 6;
             $params['labels'] = array('show' => 'history.show');
             $params['route_history'] = 'Guard_history';
@@ -71,6 +72,7 @@ class GuardStatsController extends Controller {
     {
         $this->initDateTimeTransformer();
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
+        $statsManager = $this->get('metaclass_auth_guard.statistics_manager');
 
         $params['routes']['this'] = 'Guard_history';
         $params['action_params'] = array('ipAddress' => $ipAddress);
@@ -90,7 +92,7 @@ class GuardStatsController extends Controller {
         $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.history');
 
         if (isSet($limits['From'])) {
-            $history = $governor->requestCountsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
+            $history = $statsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
             $this->addHistoryTableParams($params, $history, 'username', 'secu_requests.col.username');
             $params['route_byUsername'] = 'Guard_statisticsByUserName';
             $params['labels'] = array('show' => 'history.show');
@@ -112,6 +114,7 @@ class GuardStatsController extends Controller {
         $filtered = UsernamePasswordFormAuthenticationGuard::filterCredentials(array($username, ''));
         $username = $filtered[0];
         $governor = $this->get('metaclass_auth_guard.tresholds_governor');
+        $statsManager = $this->get('metaclass_auth_guard.statistics_manager');
 
         $params['routes']['this'] = 'Guard_statisticsByUserName';
         $params['action_params'] = array('username' => $username);
@@ -127,8 +130,8 @@ class GuardStatsController extends Controller {
         $fieldValues =& $params['fieldValues'];
         $fieldValues['username'] = $username;
         $fieldValues['countingSince'] = $this->dtTransformer->transform($countingSince);
-        $fieldValues['failureCount'] = $governor->requestCountsManager->countLoginsFailedForUserName($username, $countingSince);
-        $fieldValues['successCount'] = $governor->requestCountsManager->countLoginsSucceededForUserName($username,$countingSince);
+        $fieldValues['failureCount'] = $statsManager->countLoginsFailedForUserName($username, $countingSince);
+        $fieldValues['successCount'] = $statsManager->countLoginsSucceededForUserName($username,$countingSince);
         $isUsernameBlocked = $fieldValues['failureCount'] >= $governor->limitPerUserName;
         $fieldValues['usernameBlocked'] = $this->booleanLabel($isUsernameBlocked);
         $fieldValues['allowReleasedUserOnAddressFor'] = $this->translateRelativeDate($governor->allowReleasedUserOnAddressFor);
@@ -142,7 +145,7 @@ class GuardStatsController extends Controller {
             $params['route_history'] = 'Guard_history';
             $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
             $params['limits']['Until'] = $this->dtTransformer->transform($limits['Until']);
-            $history = $governor->requestCountsManager->countsByUsernameBetween($username, $limits['From'], $limits['Until']);
+            $history = $statsManager->countsByUsernameBetween($username, $limits['From'], $limits['Until']);
             $this->addHistoryTableParams($params, $history, 'ipAddress', 'secu_requests.col.ipAddress');
         }
 
@@ -230,9 +233,9 @@ class GuardStatsController extends Controller {
         $params['fieldValues'] = $fieldValues;
     }
 
-    protected function addCountsGroupedTableParams(&$params, $request, $governor, $limits)
+    protected function addCountsGroupedTableParams(&$params, $request, $governor, $limits, $statsManager)
     {
-        $countsByIpAddress = $governor->requestCountsManager->countsGroupedByIpAddress($limits['From'], $limits['Until']);
+        $countsByIpAddress = $statsManager->countsGroupedByIpAddress($limits['From'], $limits['Until']);
         $params['columnSpec'] = array(
             'secu_requests.col.ipAddress' => 'ipAddress',
             'countsGroupedByIpAddress.col.blocked' => 'blocked',
