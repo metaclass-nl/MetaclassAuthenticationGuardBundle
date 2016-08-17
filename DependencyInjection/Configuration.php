@@ -6,12 +6,12 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * Merges configuration from the app/config files
+ * Merges configuration from the app/config files.
  */
 class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('name')->defaultValue('default')->end()
-                    ->end()                    
+                    ->end()
                 ->end()
                 ->arrayNode('ui')
                     ->addDefaultsIfNotSet()

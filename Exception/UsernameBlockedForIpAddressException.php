@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Metaclass\AuthenticationGuardBundle\Exception;
 
 /**
@@ -8,7 +9,6 @@ namespace Metaclass\AuthenticationGuardBundle\Exception;
  * 'limitPerUserName' with the username have failed within the time period
  * configured in 'blockUsernamesFor' minus 'counterDurationInSeconds'.
  */
-class UsernameBlockedForIpAddressException extends UsernameBlockedException {
-
+class UsernameBlockedForIpAddressException extends UsernameBlockedException
+{
 }
-?>

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /* parts of the code in this file are copied from UsernamePasswordFormAuthenticationListener
  * and thus (c) Fabien Potencier <fabien@symfony.com>, 
  * the rest is (c) MetaClass Groningen.
@@ -23,23 +24,19 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\ParameterBagUtils;
-
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\ProviderNotFoundException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-
 use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
 
 /**
  * Service that replaces Symfonies UsernamePasswordFormAuthenticationListener
  * in order to count authentication requests and block them to stop eventual
  * brute force and/or dictionary attacks.
- *
- * @package Metaclass\AuthenticationGuardBundle\Service
  */
-class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationListener {
-
+class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationListener
+{
     /**
      * @var CsrfTokenManagerInterface stored once again because inherited variable is private
      */
@@ -56,7 +53,8 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     protected $governor;
 
     /**
-     * In order to hide execution time differences when authentication is not blocked
+     * In order to hide execution time differences when authentication is not blocked.
+     *
      * @var float How long execution of the authentication process should take
      */
     public $authExecutionSeconds;
@@ -64,13 +62,13 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     /**
      * @var string pattern for validating the username
      */
-    static $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF. If you want to be able to register e-mail addresses, don't exclude @
+    public static $usernamePattern = '/([^\\x20-\\x7E])/u'; //default is to allow all 1 to 1 visible ASCII characters (from space to ~). This excludes CR, LF, Tab , FF. If you want to be able to register e-mail addresses, don't exclude @
 
     /**
      * @var string|null pattern(s) for validating the password. If not set, usernamePattern is used
      */
-    static $passwordPattern;
-    
+    public static $passwordPattern;
+
     /**
      * {@inheritdoc}
      */
@@ -79,22 +77,26 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         parent::__construct($tokenStorage, $authenticationManager, $sessionStrategy, $httpUtils, $providerKey, $successHandler, $failureHandler, array_merge(array(
                 'username_parameter' => '_username',
                 'password_parameter' => '_password',
-                'csrf_parameter'     => '_csrf_token',
-                'intention'          => 'authenticate',
-                'post_only'          => true,
+                'csrf_parameter' => '_csrf_token',
+                'intention' => 'authenticate',
+                'post_only' => true,
         ), $options), $logger, $dispatcher);
-    
+
         $this->csrfTokenManager = $csrfTokenManager;
         $this->myTokenStorage = $tokenStorage;
     }
 
     /**
      * Sets the TresholdsGovernor. Used on configuration.
+     *
      * @param TresholdsGovernor $governor
+     *
      * @return $this
      */
-    public function setGovenor(TresholdsGovernor $governor) {
+    public function setGovenor(TresholdsGovernor $governor)
+    {
         $this->governor = $governor;
+
         return $this;
     }
 
@@ -102,10 +104,11 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
      * May be called on configuration.
      * Defaults are in the declaration of the variables.
      *
-     * @param string $usernamePattern
+     * @param string      $usernamePattern
      * @param string|null $passwordPattern if null the $usernamePattern is also used for validating the password
      */
-    public function setValidationPatterns($usernamePattern, $passwordPattern=null) {
+    public function setValidationPatterns($usernamePattern, $passwordPattern = null)
+    {
         self::$usernamePattern = $usernamePattern;
         if ($passwordPattern !== null) {
             self::$passwordPattern = $passwordPattern;
@@ -113,7 +116,8 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
     }
 
     /**
-     * In order to hide execution time differences when authentication is not blocked
+     * In order to hide execution time differences when authentication is not blocked.
+     *
      * @var float How long execution of the authentication process should take
      */
     public function setAuthExecutionSeconds($seconds)
@@ -121,7 +125,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         $this->authExecutionSeconds = $seconds;
     }
 
-/**
+    /**
      * {@inheritdoc}
      */
     protected function requiresAuthentication(Request $request)
@@ -132,7 +136,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
 
         return parent::requiresAuthentication($request);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -142,19 +146,16 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
         $originalCred = $this->getCredentials($request);
         $filteredCred = $this->filterCredentials($originalCred);
         $request->getSession()->set(Security::LAST_USERNAME, $originalCred[0]);
-        
+
         if (null !== $this->csrfTokenManager) {
             $this->checkCrsfToken($request);
         }
-        
+
         //initialize the governor so that we can register a failure
         $this->governor->initFor(
-                 $request->getClientIp()
-                , $filteredCred[0]
-                , $filteredCred[1]
-                , '' //cookieToken not yet used (setting and getting cookies NYI)
+                 $request->getClientIp(), $filteredCred[0], $filteredCred[1], '' //cookieToken not yet used (setting and getting cookies NYI)
              );
-        
+
         if ($originalCred != $filteredCred) { //we can not accept invalid characters
             $this->governor->registerAuthenticationFailure();
             $exception = new BadCredentialsException('Credentials contain invalid character(s)');
@@ -178,7 +179,7 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
                     }
 
                     return $newToken;
-               } catch (AuthenticationException $e) {
+                } catch (AuthenticationException $e) {
                     if ($this->isClientResponsibleFor($e)) {
                         $this->governor->registerAuthenticationFailure();
                     } //else do not register service errors as failures
@@ -188,8 +189,8 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
                         $this->governor->sleepUntilSinceInit($this->authExecutionSeconds);
                     }
                     throw $e;
-               }
-           }
+                }
+            }
         } // end $originalCred != $filteredCred
 
         $this->governor->sleepUntilFixedExecutionTime(); // hides execution time differences of tresholds governor
@@ -201,22 +202,25 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
      * using a naming scheme.
      *
      * @param Rejection $rejection
+     *
      * @return \Metaclass\AuthenticationGuardBundle\Exception\AuthenticationBlockedException if a rejection is passed.
      */
-    protected function getExceptionOnRejection(Rejection $rejection=null)
+    protected function getExceptionOnRejection(Rejection $rejection = null)
     {
         if ($rejection) {
             $exceptionClass = 'Metaclass\\AuthenticationGuardBundle\\Exception\\'
-                . subStr(get_class($rejection), 35). 'Exception';
+                .subStr(get_class($rejection), 35).'Exception';
+
             return new $exceptionClass(strtr($rejection->message, $rejection->parameters));
         }
     }
 
     /** Checks if the csrf_token_id is valid as a CSRF token
      * @param Request $request
+     *
      * @throws InvalidCsrfTokenException if it is invalid
      */
-    protected function checkCrsfToken(Request $request) 
+    protected function checkCrsfToken(Request $request)
     {
         $csrfToken = ParameterBagUtils::getRequestParameterValue($request, $this->options['csrf_parameter']);
 
@@ -227,9 +231,10 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
 
     /** Get the credentials from the request.
      * @param Request $request
+     *
      * @return array with the credentials, username at 0, password at 1 (int)
      */
-    protected function getCredentials(Request $request) 
+    protected function getCredentials(Request $request)
     {
         if ($this->options['post_only']) {
             $username = trim($request->request->get($this->options['username_parameter'], null, true));
@@ -238,24 +243,26 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
             $username = trim($request->get($this->options['username_parameter'], null, true));
             $password = $request->get($this->options['password_parameter'], null, true);
         }
-        
+
         return array($username, $password);
     }
-    
+
     /** Filter the credentials to protect against invalid UTF-8 characters.
-     *
      * @param array $usernameAndPassword, username at 0, password at 1 (int)
+     *
      * @return array filtered credentials, username at 0, password at 1 (int)
      */
-    public static function filterCredentials($usernameAndPassword) {
+    public static function filterCredentials($usernameAndPassword)
+    {
         return array(
             self::filterUsername($usernameAndPassword[0]),
-            self::filterPassword($usernameAndPassword[1])
+            self::filterPassword($usernameAndPassword[1]),
         );
     }
 
     /** Filter the username using self::$usernamePattern
      * @param string $value
+     *
      * @return string filtered username
      */
     public static function filterUsername($value)
@@ -265,11 +272,12 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
 
     /** Filter the password using self::$passwordPattern if not null, else using self::$usernamePattern
      * @param string $value
+     *
      * @return string filtered password
      */
     public static function filterPassword($value)
     {
-        return preg_replace( (self::$passwordPattern === null ? self::$usernamePattern : self::$passwordPattern), ' ', $value);
+        return preg_replace((self::$passwordPattern === null ? self::$usernamePattern : self::$passwordPattern), ' ', $value);
     }
 
     /** Wheather the client (who sended the request) is reponsible for the authentication failure.
@@ -277,11 +285,12 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
      * and counting them would only lead to blocking legitimate users.
      *
      * @param AuthenticationException $e
+     *
      * @return bool
      */
-    static public function isClientResponsibleFor(AuthenticationException $e) {
-        return !($e instanceOf AuthenticationServiceException
-                    || $e instanceOf ProviderNotFoundException);
+    public static function isClientResponsibleFor(AuthenticationException $e)
+    {
+        return !($e instanceof AuthenticationServiceException
+                    || $e instanceof ProviderNotFoundException);
     }
 }
-?>

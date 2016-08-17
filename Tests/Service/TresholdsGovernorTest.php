@@ -1,29 +1,19 @@
-<?php 
+<?php
+
 namespace Metaclass\AuthenticationGuardBundle\Tests\Service;
 
-use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
-use Metaclass\TresholdsGovernor\Manager\RdbManager;
-use Metaclass\TresholdsGovernor\Result\Rejection;
-use Metaclass\TresholdsGovernor\Result\IpAddressBlocked;
-use Metaclass\TresholdsGovernor\Result\UsernameBlocked;
-use Metaclass\TresholdsGovernor\Result\UsernameBlockedForCookie;
-use Metaclass\TresholdsGovernor\Result\UsernameBlockedForIpAddress;
-
 use Metaclass\TresholdsGovernor\Tests\Service\FunctionalTest;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * To run Metaclass\TresholdsGovernor\Tests\Service\FunctionalTest with
- * doctrines default connection
- *
- * @package Metaclass\AuthenticationGuardBundle\Tests\Service
+ * doctrines default connection.
  */
 class TresholdsGovernorTest extends FunctionalTest // \PHPUnit_Framework_TestCase
 {
-    function setup() 
+    public function setup()
     {
         global $kernel;
-        if (!isSet($kernel)) {
+        if (!isset($kernel)) {
             $kernel = new \AppKernel('test', true);
             $kernel->boot();
         }
@@ -46,13 +36,11 @@ class TresholdsGovernorTest extends FunctionalTest // \PHPUnit_Framework_TestCas
 
         $this->governor->dtString = '1980-07-01 00:00:00';
         $this->governor->counterDurationInSeconds = 300; //5 minutes
-        $this->governor->blockUsernamesFor = '30 days'; 
+        $this->governor->blockUsernamesFor = '30 days';
         $this->governor->blockIpAddressesFor = '30 days'; //not very realistic, but should still work
-        $this->governor->allowReleasedUserOnAddressFor = '30 days'; 
-        $this->governor->allowReleasedUserByCookieFor =  '10 days';
+        $this->governor->allowReleasedUserOnAddressFor = '30 days';
+        $this->governor->allowReleasedUserByCookieFor = '10 days';
 
         $this->statisticsManager = $container->get('metaclass_auth_guard.statistics_manager');
     }
-
 }
-?>

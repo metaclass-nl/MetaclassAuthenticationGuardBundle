@@ -8,18 +8,15 @@ use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-
 use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticationGuard;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Controller for showing statistics
- *
- * @package Metaclass\AuthenticationGuardBundle\Controller
+ * Controller for showing statistics.
  */
-class GuardStatsController extends Controller {
-
+class GuardStatsController extends Controller
+{
     /** @var int \IntlDateFormatter datetype derived by ::initDateFormatAndPattern,
      *    Defaults to DateTimeType::DEFAULT_DATE_FORMAT */
     protected $dateFormat;
@@ -36,7 +33,7 @@ class GuardStatsController extends Controller {
     protected $translateRelativeDateArray;
 
     /**
-     * Shows statistics grouped by IP address
+     * Shows statistics grouped by IP address.
      *
      * Route("/statistics", name="Guard_statistics")
      */
@@ -52,7 +49,7 @@ class GuardStatsController extends Controller {
 
         $this->addStatisticCommonParams($params, $governor);
         $countingSince = $governor->getMinBlockingLimit();
-        $fieldValues =& $params['fieldValues'];
+        $fieldValues = &$params['fieldValues'];
         $fieldValues['countingSince'] = $this->dtTransformer->transform($countingSince);
         $fieldValues['failureCount'] = $statsManager->countLoginsFailed($countingSince);
         $fieldValues['successCount'] = $statsManager->countLoginsSucceeded($countingSince);
@@ -62,7 +59,7 @@ class GuardStatsController extends Controller {
             : $countingSince;
         $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.statistics', $limitFrom);
 
-        if (isSet($limits['From'])) {
+        if (isset($limits['From'])) {
             $this->addCountsGroupedTableParams($params, $request, $governor, $limits, $statsManager);
             $params['blockedHeaderIndent'] = 6;
             $params['labels'] = array('show' => 'history.show');
@@ -77,7 +74,7 @@ class GuardStatsController extends Controller {
     }
 
     /**
-     * Shows request counters history for an ip address
+     * Shows request counters history for an ip address.
      *
      * Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
      */
@@ -104,7 +101,7 @@ class GuardStatsController extends Controller {
 
         $limits = $this->addStatsPeriodForm($params, $request, $governor, 'StatsPeriod.history');
 
-        if (isSet($limits['From'])) {
+        if (isset($limits['From'])) {
             $history = $statsManager->countsByAddressBetween($ipAddress, $limits['From'], $limits['Until']);
             $this->addHistoryTableParams($params, $history, 'username', 'secu_requests.col.username');
             $params['route_byUsername'] = 'Guard_statisticsByUserName';
@@ -119,7 +116,7 @@ class GuardStatsController extends Controller {
     }
 
     /**
-     * Shows request counterss history for a username
+     * Shows request counterss history for a username.
      *
      * Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
      */
@@ -142,11 +139,11 @@ class GuardStatsController extends Controller {
         $params['fieldSpec']['statisticsByUserName.isUsernameBlocked'] = 'usernameBlocked';
 
         $countingSince = new \DateTime("$governor->dtString - $governor->blockUsernamesFor");
-        $fieldValues =& $params['fieldValues'];
+        $fieldValues = &$params['fieldValues'];
         $fieldValues['username'] = $username;
         $fieldValues['countingSince'] = $this->dtTransformer->transform($countingSince);
         $fieldValues['failureCount'] = $statsManager->countLoginsFailedForUserName($username, $countingSince);
-        $fieldValues['successCount'] = $statsManager->countLoginsSucceededForUserName($username,$countingSince);
+        $fieldValues['successCount'] = $statsManager->countLoginsSucceededForUserName($username, $countingSince);
         $isUsernameBlocked = $fieldValues['failureCount'] >= $governor->limitPerUserName;
         $fieldValues['usernameBlocked'] = $this->booleanLabel($isUsernameBlocked);
         $fieldValues['allowReleasedUserOnAddressFor'] = $this->translateRelativeDate($governor->allowReleasedUserOnAddressFor);
@@ -155,7 +152,7 @@ class GuardStatsController extends Controller {
             ? null
             : $countingSince;
         $limits = $this->addStatsPeriodForm($params, $request, $governor, 'Historie', $limitFrom);
-        if (isSet($limits['From'])) {
+        if (isset($limits['From'])) {
             $params['labels'] = array('show' => 'history.show');
             $params['route_history'] = 'Guard_history';
             $params['limits']['From'] = $this->dtTransformer->transform($limits['From']);
@@ -171,8 +168,8 @@ class GuardStatsController extends Controller {
     }
 
     /**
-     * @param array $params
-     * @param array $history of rows (counters from secu_requests)
+     * @param array  $params
+     * @param array  $history   of rows (counters from secu_requests)
      * @param string $col1Field field to be shown (username or ipAddress)
      * @param string $col1Label label for $col1Field
      */
@@ -188,7 +185,7 @@ class GuardStatsController extends Controller {
             'secu_requests.col.usernameBlockedForIpAddress' => 'usernameBlockedForIpAddress',
             'secu_requests.col.usernameBlockedForCookie' => 'usernameBlockedForCookie',
         );
-        forEach($history as $key => $row) {
+        foreach ($history as $key => $row) {
             $dt = new \DateTime($row['dtFrom']);
             $history[$key]['dtFrom'] = $this->dtTransformer->transform($dt);
         }
@@ -197,16 +194,16 @@ class GuardStatsController extends Controller {
     }
 
     /** Add the statistics period form to the parameters.
+     * @param array             $params    to add the form to
+     * @param Request           $request   to be handled by the form
+     * @param TresholdsGovernor $governor  used to caluculate the history limit
+     * @param string            $label
+     * @param \DateTime|null    $limitFrom if passed limits are set on the form,
+     *                                     otherwise the limits from the form are retrieved
      *
-     * @param array $params to add the form to
-     * @param Request $request to be handled by the form
-     * @param TresholdsGovernor $governor used to caluculate the history limit
-     * @param string $label
-     * @param \DateTime|null $limitFrom if passed limits are set on the form,
-     *  otherwise the limits from the form are retrieved
      * @return array('From' => limit from, 'Until' => limit until)
      */
-    protected function addStatsPeriodForm(&$params, $request, $governor, $label, $limitFrom=null)
+    protected function addStatsPeriodForm(&$params, $request, $governor, $label, $limitFrom = null)
     {
         $limits['Until'] = new \DateTime();
         $labels = array('From' => 'StatsPeriod.From', 'Until' => 'StatsPeriod.Until');
@@ -226,7 +223,7 @@ class GuardStatsController extends Controller {
             'labels' => $labels,
             'min' => $historyLimit,
             'date_format' => $this->dateFormat,
-            'dateTimePattern' => $this->dateTimePattern
+            'dateTimePattern' => $this->dateTimePattern,
         );
         $form = $this->createForm($formTypeClass, null, $options);
 
@@ -242,11 +239,11 @@ class GuardStatsController extends Controller {
             $form->get('Until')->setData($limits['Until']);
         }
         $params['form'] = $form->createView();
+
         return $limits;
     }
 
     /** Add common parameters
-     *
      * @param $params array to add to
      * @param TresholdsGovernorv $governor
      */
@@ -260,7 +257,7 @@ class GuardStatsController extends Controller {
             'secu_requests.loginsSucceeded' => 'successCount',
             'secu_requests.loginsFailed' => 'failureCount',
         );
-        $params['fieldSpec'] = isSet($params['fieldSpec'])
+        $params['fieldSpec'] = isset($params['fieldSpec'])
             ? array_merge($params['fieldSpec'], $fieldSpec)
             : $fieldSpec;
 
@@ -270,11 +267,10 @@ class GuardStatsController extends Controller {
     }
 
     /** Add parameters for the grouped counts table
-     *
-     * @param array $params to add the parameters to
-     * @param Request $request
-     * @param TresholdsGovernor $governor whose limitBasePerIpAddress is used
-     * @param array $limits array('From' => limit from, 'Until' => limit until)
+     * @param array                      $params       to add the parameters to
+     * @param Request                    $request
+     * @param TresholdsGovernor          $governor     whose limitBasePerIpAddress is used
+     * @param array                      $limits       array('From' => limit from, 'Until' => limit until)
      * @param StatisticsManagerInterface $statsManager
      */
     protected function addCountsGroupedTableParams(&$params, $request, $governor, $limits, $statsManager)
@@ -292,30 +288,30 @@ class GuardStatsController extends Controller {
             'secu_requests.col.usernameBlockedForCookie' => 'usernameBlockedForCookie',
         );
         if ($request->isMethod('POST')) {
-            unSet($params['columnSpec']['Blok']);
+            unset($params['columnSpec']['Blok']);
         }
-        forEach($countsByIpAddress as $key => $row)
-        {
+        foreach ($countsByIpAddress as $key => $row) {
             $blocked = $row['loginsFailed'] >= $governor->limitBasePerIpAddress;
             $countsByIpAddress[$key]['blocked'] = $this->booleanLabel($blocked);
             // Yet to be added: count usernames released, count usernames blocked
-
         }
-        $params['items'] =  $countsByIpAddress;
+        $params['items'] = $countsByIpAddress;
     }
 
     /** Convert boolean a a label to show to the user
-     * @param boolean $value
+     * @param bool $value
+     *
      * @return string like 'Yes' or 'No'
      */
     protected function booleanLabel($value)
     {
         $key = $value ? 'boolean.1' : 'boolean.0';
+
         return $this->get('translator')->trans($key, array(), 'metaclass_auth_guard');
     }
 
     /**
-     * Initialise $this->dtTransformer with a new DateTimeToLocalizedStringTransformer
+     * Initialize $this->dtTransformer with a new DateTimeToLocalizedStringTransformer.
      */
     protected function initDateTimeTransformer()
     {
@@ -348,7 +344,7 @@ class GuardStatsController extends Controller {
         );
         $dateFormat = null;
         $formatOptionUc = strtoupper($formatOption);
-        if ( isset($constantOptions[$formatOptionUc]) ) {
+        if (isset($constantOptions[$formatOptionUc])) {
             $this->dateFormat = $constantOptions[$formatOptionUc];
             $this->dateTimePattern = null;
         } else {
@@ -361,12 +357,14 @@ class GuardStatsController extends Controller {
      * 'minutes', 'hours', 'days' in a string.
      *
      * @param string $durationString
+     *
      * @return string with the occurrences replaced
      */
     protected function translateRelativeDate($durationString)
     {
         $toTranslate = array('minutes', 'hours', 'days');
         $translated = $this->translateRelativeDateArray($toTranslate);
+
         return str_replace(
             $toTranslate,
             $translated,
@@ -374,8 +372,8 @@ class GuardStatsController extends Controller {
     }
 
     /** Translate relative datetime durations
-     *
      * @param array $toTranslate
+     *
      * @return array with durations translated
      */
     protected function translateRelativeDateArray($toTranslate)
@@ -387,17 +385,16 @@ class GuardStatsController extends Controller {
                 $this->translateRelativeDateArray[] = $t->trans('relativeDate.'.$name, array(), 'metaclass_auth_guard');
             }
         }
+
         return $this->translateRelativeDateArray;
     }
 
     /** Build a menu.
-     *
-     * @param array $params
+     * @param array  $params
      * @param string $currentRoute
      */
     protected function buildMenu(&$params, $currentRoute)
     {
         // To be overridden by subclass
     }
-
-} 
+}

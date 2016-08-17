@@ -5,9 +5,7 @@ namespace Metaclass\AuthenticationGuardBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class MetaclassAuthenticationGuardBundle
- *
- * @package Metaclass\AuthenticationGuardBundle
+ * Class MetaclassAuthenticationGuardBundle.
  */
 class MetaclassAuthenticationGuardBundle extends Bundle
 {

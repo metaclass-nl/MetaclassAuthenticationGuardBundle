@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Metaclass\AuthenticationGuardBundle\Exception;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -9,7 +10,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  *  was not attempted because the tresholds governor decided against it
  *  for reasons depending on the subclass of this.
  */
-class AuthenticationBlockedException extends AuthenticationException {
-
+class AuthenticationBlockedException extends AuthenticationException
+{
 }
-?>

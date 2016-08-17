@@ -11,8 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type;
 
 /**
  * Form used to specify the time period over wich statistics are calculated.
- *
- * @package Metaclass\AuthenticationGuardBundle\Form\Type
  */
 class StatsPeriodType extends AbstractType
 {
@@ -27,7 +25,7 @@ class StatsPeriodType extends AbstractType
                 'widget' => 'single_text',
                 'date_format' => $options['date_format'],
                 'format' => $options['dateTimePattern'],
-                'constraints' => $constraints
+                'constraints' => $constraints,
             ));
         $builder->add('Until', 'Symfony\Component\Form\Extension\Core\Type\DateTimeType', array(
                 'label' => $options['labels']['Until'],
@@ -35,7 +33,7 @@ class StatsPeriodType extends AbstractType
                 'widget' => 'single_text',
                 'date_format' => $options['date_format'],
                 'format' => $options['dateTimePattern'],
-                'constraints' => $constraints
+                'constraints' => $constraints,
             ));
     }
 
