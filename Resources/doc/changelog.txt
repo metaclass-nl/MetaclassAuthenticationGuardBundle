@@ -477,6 +477,7 @@ Typo in English translation
 #10: api docs
 - Completed api docs
 -------------------------------------
+(master)
 #13: PSR-2
 - ran PHP Coding Standards Fixer with --level=symfony (https://github.com/FriendsOfPhp/PHP-CS-Fixer)
 ---------------------------------------
