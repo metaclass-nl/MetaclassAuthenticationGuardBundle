@@ -9,7 +9,11 @@ use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Form\Extension\Core\Type;
 
-
+/**
+ * Form used to specify the time period over wich statistics are calculated.
+ *
+ * @package Metaclass\AuthenticationGuardBundle\Form\Type
+ */
 class StatsPeriodType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

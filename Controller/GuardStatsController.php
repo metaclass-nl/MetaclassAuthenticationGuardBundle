@@ -3,6 +3,8 @@
 
 namespace Metaclass\AuthenticationGuardBundle\Controller;
 
+use Metaclass\TresholdsGovernor\Manager\StatisticsManagerInterface;
+use Metaclass\TresholdsGovernor\Service\TresholdsGovernor;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -11,11 +13,17 @@ use Metaclass\AuthenticationGuardBundle\Service\UsernamePasswordFormAuthenticati
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Controller for showing statistics
+ *
+ * @package Metaclass\AuthenticationGuardBundle\Controller
+ */
 class GuardStatsController extends Controller {
 
     /** @var int \IntlDateFormatter datetype derived by ::initDateFormatAndPattern,
      *    Defaults to DateTimeType::DEFAULT_DATE_FORMAT */
     protected $dateFormat;
+
     /** @var string|null \IntlDateFormatter pattern derived by ::initDateFormatAndPattern  */
     protected $dateTimePattern;
 
@@ -23,10 +31,13 @@ class GuardStatsController extends Controller {
 
     /** @var \Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer */
     protected $dtTransformer;
+
     /** @var array with translated relative date words like 'minutes', 'hours', 'days' */
     protected $translateRelativeDateArray;
 
     /**
+     * Shows statistics grouped by IP address
+     *
      * Route("/statistics", name="Guard_statistics")
      */
     public function statisticsAction(Request $request)
@@ -66,6 +77,8 @@ class GuardStatsController extends Controller {
     }
 
     /**
+     * Shows request counters history for an ip address
+     *
      * Route("/history/{ipAddress}", name="Guard_history", requirements={"ipAddress" = "[^/]+"})
      */
     public function historyAction(Request $request, $ipAddress)
@@ -106,6 +119,8 @@ class GuardStatsController extends Controller {
     }
 
     /**
+     * Shows request counterss history for a username
+     *
      * Route("/statistics/{username}", name="Guard_statisticsByUserName", requirements={"username" = "[^/]*"})
      */
     public function statisticsByUserNameAction(Request $request, $username)
@@ -155,6 +170,12 @@ class GuardStatsController extends Controller {
             $params);
     }
 
+    /**
+     * @param array $params
+     * @param array $history of rows (counters from secu_requests)
+     * @param string $col1Field field to be shown (username or ipAddress)
+     * @param string $col1Label label for $col1Field
+     */
     protected function addHistoryTableParams(&$params, $history, $col1Field, $col1Label)
     {
         $params['columnSpec'] = array(
@@ -171,10 +192,20 @@ class GuardStatsController extends Controller {
             $dt = new \DateTime($row['dtFrom']);
             $history[$key]['dtFrom'] = $this->dtTransformer->transform($dt);
         }
-        $params['items'] =  $history;
+        $params['items'] = $history;
         $params['blockedHeaderIndent'] = 5;
     }
 
+    /** Add the statistics period form to the parameters.
+     *
+     * @param array $params to add the form to
+     * @param Request $request to be handled by the form
+     * @param TresholdsGovernor $governor used to caluculate the history limit
+     * @param string $label
+     * @param \DateTime|null $limitFrom if passed limits are set on the form,
+     *  otherwise the limits from the form are retrieved
+     * @return array('From' => limit from, 'Until' => limit until)
+     */
     protected function addStatsPeriodForm(&$params, $request, $governor, $label, $limitFrom=null)
     {
         $limits['Until'] = new \DateTime();
@@ -214,6 +245,11 @@ class GuardStatsController extends Controller {
         return $limits;
     }
 
+    /** Add common parameters
+     *
+     * @param $params array to add to
+     * @param TresholdsGovernorv $governor
+     */
     protected function addStatisticCommonParams(&$params, $governor)
     {
         $this->buildMenu($params, 'Guard_show');
@@ -233,6 +269,14 @@ class GuardStatsController extends Controller {
         $params['fieldValues'] = $fieldValues;
     }
 
+    /** Add parameters for the grouped counts table
+     *
+     * @param array $params to add the parameters to
+     * @param Request $request
+     * @param TresholdsGovernor $governor whose limitBasePerIpAddress is used
+     * @param array $limits array('From' => limit from, 'Until' => limit until)
+     * @param StatisticsManagerInterface $statsManager
+     */
     protected function addCountsGroupedTableParams(&$params, $request, $governor, $limits, $statsManager)
     {
         $countsByIpAddress = $statsManager->countsGroupedByIpAddress($limits['From'], $limits['Until']);
@@ -260,9 +304,9 @@ class GuardStatsController extends Controller {
         $params['items'] =  $countsByIpAddress;
     }
 
-    /**
+    /** Convert boolean a a label to show to the user
      * @param boolean $value
-     * @return string like Yes or No
+     * @return string like 'Yes' or 'No'
      */
     protected function booleanLabel($value)
     {
@@ -270,6 +314,9 @@ class GuardStatsController extends Controller {
         return $this->get('translator')->trans($key, array(), 'metaclass_auth_guard');
     }
 
+    /**
+     * Initialise $this->dtTransformer with a new DateTimeToLocalizedStringTransformer
+     */
     protected function initDateTimeTransformer()
     {
         $this->initDateFormatAndPattern();
@@ -310,6 +357,12 @@ class GuardStatsController extends Controller {
         }
     }
 
+    /** Translate occurences of relative datetime durations
+     * 'minutes', 'hours', 'days' in a string.
+     *
+     * @param string $durationString
+     * @return string with the occurrences replaced
+     */
     protected function translateRelativeDate($durationString)
     {
         $toTranslate = array('minutes', 'hours', 'days');
@@ -320,6 +373,11 @@ class GuardStatsController extends Controller {
             $durationString);
     }
 
+    /** Translate relative datetime durations
+     *
+     * @param array $toTranslate
+     * @return array with durations translated
+     */
     protected function translateRelativeDateArray($toTranslate)
     {
         if (!isset($this->translateRelativeDateArray)) {
@@ -332,6 +390,11 @@ class GuardStatsController extends Controller {
         return $this->translateRelativeDateArray;
     }
 
+    /** Build a menu.
+     *
+     * @param array $params
+     * @param string $currentRoute
+     */
     protected function buildMenu(&$params, $currentRoute)
     {
         // To be overridden by subclass

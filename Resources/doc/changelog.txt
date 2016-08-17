@@ -473,3 +473,7 @@ Support separate \Metaclass\TresholdsGovernor\Manager\StatisticsManagerInterface
 Typo in English translation
 - secu_requests.blockedColumns corrected 'attempts'
 ------------------------------------
+(master)
+#10: api docs
+- Completed api docs
+-------------------------------------
