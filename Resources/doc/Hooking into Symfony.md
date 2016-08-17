@@ -26,19 +26,27 @@ was not extended is that it makes some properties private that are needed by the
 refactoring was needed so that only one small method could be inherited. 
 
 This is where UsernamePasswordFormAuthenticationGuard is different:
+
 1. It requires access to a TressholdsGovernor
+
 2. Sanitizes the credentials to protect against invalid UTF-8 characters
+
 3. It initializes the TressholdsGovernor,
+
 4. If the credentials did contain unwanted characters, it registers an authentication failure with the TressholdsGovernor 
    and throws a BadCredentialsException,
+
 5. It lets the TressholdsGovernor check the authentication attempt. (If it rejects the attempt, the TressholdsGovernor
    will throw some sort of AuthenticationBlockedException)
+
 6. If the Authentication Manager throws an AuthenticationException it will check if the user is to be held responsable 
    for the exception. If so, it registers an authentication failure with the TressholdsGovernor before it rethrows 
    the Exception. (imho AuthenticationServiceException and ProviderNotFoundException signal bad service plumming
    for which the user should not be blocked later when the problem is solved).
+
 7. If the Authentication Manager does not throw an AuthenticationException it registers an authentication success with the 
    TressholdsGovernor.
+
 8. If there still is a old UsernamePasswordToken in the session, and the Authentication Manager has returned a new 
    UsernamePasswordToken with a different user name, the session is cleared in order to prevent session data from
    the old user to leak to the new user*.
