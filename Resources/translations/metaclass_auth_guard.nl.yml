@@ -10,11 +10,11 @@ statisticsByUserName:
 
 tresholds_governor_params:
     countingSince: Telt sinds
-    blockUsernamesFor: Blokkeeer gebruikersnamen voor
-    blockIpAddressesFor: Blokkeeer IP adressen voor
+    blockUsernamesFor: Blokkeer gebruikersnamen voor
+    blockIpAddressesFor: Blokkeer IP-adressen voor
     allowReleasedUserOnAddressFor: Gebruikersnaam op adres vrijgeven voor
     limitPerUserName: Maximum per gebruikersnaam
-    limitBasePerIpAddress: Maximum per Adres
+    limitBasePerIpAddress: Maximum per adres
 
 secu_requests:
     username: Gebruikersnaam
@@ -41,7 +41,7 @@ StatsPeriod:
     From: Van
     Until: Tot
     history: Historie
-    statistics: IP Adressen
+    statistics: IP-Adressen
     submit: Tonen
 
 relativeDate:
