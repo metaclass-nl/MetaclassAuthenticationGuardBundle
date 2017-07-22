@@ -30,8 +30,6 @@ This bundle is for the symfony framework and this version requires Symfony >=2.8
 (for Symfony ~2.3 use v0.3, for Symfony 2.7 use v0.4)
 Requires metaclass-nl/tresholds-governor 0.3@dev but the service configuration
 still requires Doctrine DBAL >=2.3.
-Tested with MySQL 5.5. Tested with PHP7.0.1. Tested with Symfony 3.0.1. (without crsf token)
-Tested on Symfony 2.8.1 with FOSUserBundle 1.3.6 and 6ccff96 (> 2.0.0 alpha3).
 
 RELEASE NOTES
 -------------
@@ -51,6 +49,10 @@ that should be sufficient if the fixedExecutionSeconds is set long enough, but u
 high (database) server loads when performance degrades, under specific conditions
 information may still be extractable by timing. Furthermore, the measures against
 timing attacks where not tested for practical effectiveness.
+
+Tested with MySQL 5.5. and 5.7. Tested with PHP7.0.1. Tested with Symfony 3.0.1 and 3.1.3 . (without crsf token)
+Tested on Symfony 2.8.1 with FOSUserBundle 1.3.6 and 6ccff96 (> 2.0.0 alpha3).
+Tested on Symfony 3.2.12 and 3.3.5 with FOSUserBundle 2.0.1 and php 7.0.18.
 
 DOCUMENTATION
 -------------
