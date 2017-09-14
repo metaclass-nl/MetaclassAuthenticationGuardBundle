@@ -172,10 +172,13 @@ class UsernamePasswordFormAuthenticationGuard extends AbstractAuthenticationList
                     //when the user goes to the login page without logging out or on reauthentication because of
                     //an InsufficientAuthenticationException there may still be a UsernamePasswordToken
                     $oldToken = $this->myTokenStorage->getToken();
-                    $oldUserName = $oldToken instanceof UsernamePasswordToken ? $oldToken->getUserName() : '';
-                    if ($newToken instanceof UsernamePasswordToken && trim($newToken->getUserName()) != trim($oldUserName)) {
-                        //user has changed without logout, clear session so that the data of the old user can not leak to the new user
-                        $request->getSession()->clear();
+                    if ($oldToken !== null) {
+                        $oldUserName = $oldToken instanceof UsernamePasswordToken ? $oldToken->getUserName() : '';
+
+                        if ($newToken instanceof UsernamePasswordToken && trim($newToken->getUserName()) != trim($oldUserName)) {
+                            //user has changed without logout, clear session so that the data of the old user can not leak to the new user
+                            $request->getSession()->clear();
+                        }
                     }
 
                     return $newToken;
