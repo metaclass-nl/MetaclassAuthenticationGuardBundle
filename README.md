@@ -1,5 +1,6 @@
 Authentication Guard for Symfony 2
 ==================================
+This bundle is no longer maintained and the repository will be archived. Symfony has protection against brute force attachs of its own.
  
 INTRODUCTION
 ------------
